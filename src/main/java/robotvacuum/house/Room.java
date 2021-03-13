@@ -1,16 +1,34 @@
 package robotvacuum.house;
 
-import java.awt.Rectangle;
+import java.util.Map;
+import java.util.stream.Collectors;
+import robotvacuum.space.Position;
 
 /**
  *
  * @author Austen Seidler
  */
 
-public class Room extends Rectangle {
+public class Room {
     //TODO: add doorways to rooms
+    private Map<Position, Wall> walls;
     
-    public Room(int width, int height, int x, int y) {
-        super(width, height, x, y);
+    public Room(Map<Position, Wall> walls) {
+        this.walls = walls;
     }
+
+    public Room(Room room) {
+        this.walls = room.getWalls().entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> new Position(e.getKey()),
+                        e -> new Wall(e.getValue())));
+    }
+
+    /**
+     * @return the walls
+     */
+    public Map<Position, Wall> getWalls() {
+        return walls;
+    }
+
 }

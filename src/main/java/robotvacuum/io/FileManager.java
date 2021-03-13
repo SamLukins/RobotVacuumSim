@@ -28,36 +28,36 @@ public class FileManager {
      * @param houseName The name of the house, used as the file name.
      * @return The data for the house retrieved from the file.
      */
-    public House readHouseFromFile(String houseName) {
-        House h = new House();
-        Scanner s = null;
-        
-        try {
-            s = new Scanner(new BufferedReader(new FileReader("savedHouses/" + houseName + ".txt")));
-
-            h.setWidth(s.nextInt());
-            h.setHeight(s.nextInt());
-            h.setFloorCovering(s.nextInt());
-            
-            while (s.hasNext()) {
-                String next = s.next();
-                if ("r".equals(next)) {
-                    h.addRoom(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt());
-                }
-                else if ("f".equals(next)) {
-                    h.addFurniture(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt());
-                }
-            }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        } finally {
-            if (s != null) {
-                s.close();
-            }
-        }
-        
-        return h;
-    }
+//    public House readHouseFromFile(String houseName) {
+//        House h = new House();
+//        Scanner s = null;
+//
+//        try {
+//            s = new Scanner(new BufferedReader(new FileReader("savedHouses/" + houseName + ".txt")));
+//
+//            h.setWidth(s.nextInt());
+//            h.setHeight(s.nextInt());
+//            h.setFloorCovering(s.nextInt());
+//
+//            while (s.hasNext()) {
+//                String next = s.next();
+//                if ("r".equals(next)) {
+//                    h.addRoom(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt());
+//                }
+//                else if ("f".equals(next)) {
+//                    h.addFurniture(s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt());
+//                }
+//            }
+//        } catch (IOException e) {
+//            System.err.println(e.getMessage());
+//        } finally {
+//            if (s != null) {
+//                s.close();
+//            }
+//        }
+//
+//        return h;
+//    }
     
     /**
      * Writes a house's data to a file in the savedHouses folder.
@@ -79,21 +79,21 @@ public class FileManager {
         try {
             p = new PrintWriter(new FileWriter("savedHouses/" + houseName + ".txt"));
             
-            p.println((int)h.getWidth() + " " + (int)h.getHeight() + " " + h.getFloorCovering());
-            for (Room r : h.getAllRooms()) {
-                p.println("r " + (int)r.getX() + " " + (int)r.getY() + " " + (int)r.getWidth() + " " + (int)r.getHeight());
-            }
-            for (Furniture f : h.getAllFurniture()) {
-                if ("robotvacuum.house.furniture.Chair".equals(f.getClass().getName())) {
-                    p.println("f 1 " + (int)f.getX() + " " + (int)f.getY() + " " + (int)f.getWidth() + " " + (int)f.getHeight());
-                }
-                else if ("robotvacuum.house.furniture.Table".equals(f.getClass().getName())) {
-                    p.println("f 2 " + (int)f.getX() + " " + (int)f.getY() + " " + (int)f.getWidth() + " " + (int)f.getHeight());
-                }
-                else {
-                    p.println("f 3 " + (int)f.getX() + " " + (int)f.getY() + " " + (int)f.getWidth() + " " + (int)f.getHeight());
-                }
-            }
+//            p.println((int)h.getWidth() + " " + (int)h.getHeight() + " " + h.getFloorCovering());
+//            for (Room r : h.getAllRooms().values()) {
+//                p.println("r " + (int)r.getX() + " " + (int)r.getY() + " " + (int)r.getWidth() + " " + (int)r.getHeight());
+//            }
+//            for (Furniture f : h.getAllFurniture()) {
+//                if ("robotvacuum.house.furniture.Chair".equals(f.getClass().getName())) {
+//                    p.println("f 1 " + (int)f.getX() + " " + (int)f.getY() + " " + (int)f.getWidth() + " " + (int)f.getHeight());
+//                }
+//                else if ("robotvacuum.house.furniture.Table".equals(f.getClass().getName())) {
+//                    p.println("f 2 " + (int)f.getX() + " " + (int)f.getY() + " " + (int)f.getWidth() + " " + (int)f.getHeight());
+//                }
+//                else {
+//                    p.println("f 3 " + (int)f.getX() + " " + (int)f.getY() + " " + (int)f.getWidth() + " " + (int)f.getHeight());
+//                }
+//            }
         } catch (IOException e) {
             System.err.println(e.getMessage());
         } finally {

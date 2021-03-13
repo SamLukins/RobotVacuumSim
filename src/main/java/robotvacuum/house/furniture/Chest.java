@@ -1,12 +1,33 @@
 package robotvacuum.house.furniture;
 
+import java.util.Collection;
+import java.util.Set;
+import robotvacuum.collision.CollisionTestData;
+
 /**
  *
  * @author Austen Seidler
  */
 
-public class Chest extends Furniture {
-    public Chest(int width, int height, int x, int y) {
-        super(width, height, x, y);
+public class Chest implements Furniture {
+
+    private final CollisionTestData cData;
+
+    public Chest(CollisionTestData cData) {
+        this.cData = cData;
+    }
+
+    @Override
+    public Collection<CollisionTestData> getCollisionTestData() {
+        return Set.of(cData);
+    }
+
+    /**
+     * Get the value of cRect
+     *
+     * @return the value of cRect
+     */
+    public CollisionTestData getcRect() {
+        return cData;
     }
 }
