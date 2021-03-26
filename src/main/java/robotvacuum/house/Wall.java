@@ -2,12 +2,13 @@ package robotvacuum.house;
 
 import java.util.Objects;
 import robotvacuum.collision.CollisionRectangle;
+import java.io.Serializable;
 
 /**
  *
  * @author SamL
  */
-public class Wall {
+public class Wall implements Serializable {
 
     private CollisionRectangle cRect;
 

@@ -6,13 +6,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import robotvacuum.collision.CollisionTestData;
 import robotvacuum.space.Position;
+import java.io.Serializable;
 
 /**
  *
  * @author Austen Seidler
  */
 
-public class Chair implements Furniture {
+public class Chair implements Furniture, Serializable {
     //TODO: add legs to chairs
 
     private final Map<Position, Leg> legs;

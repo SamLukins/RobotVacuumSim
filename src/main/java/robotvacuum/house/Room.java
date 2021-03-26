@@ -4,13 +4,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import robotvacuum.space.Position;
+import java.io.Serializable;
 
 /**
  *
  * @author Austen Seidler
  */
 
-public class Room {
+public class Room implements Serializable {
     //TODO: add doorways to rooms
     private final Map<Position, Wall> walls;
     boolean isBaseRoom;
@@ -25,7 +26,7 @@ public class Room {
                 .collect(Collectors.toMap(
                         e -> new Position(e.getKey()),
                         e -> new Wall(e.getValue())));
-        isBaseRoom = false;
+        this.isBaseRoom = room.isBaseRoom;
     }
 
     /**
@@ -35,10 +36,16 @@ public class Room {
         return walls;
     }
     
+    /**
+     * @return whether the room is the base room
+     */
     public boolean getIsBaseRoom() {
         return isBaseRoom;
     }
     
+    /**
+     * @param isBaseRoom whether the room is the base room
+     */
     public void setIsBaseRoom(boolean isBaseRoom) {
         this.isBaseRoom = isBaseRoom;
     }

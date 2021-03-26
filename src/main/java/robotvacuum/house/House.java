@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 import robotvacuum.space.Position;
 import robotvacuum.collision.CollisionRectangle;
+import java.io.Serializable;
 
 /**
  *
  * @author Austen Seidler
  */
 
-public class House {
+public class House implements Serializable {
     //TODO: When doors are added to the Room class, addRoom will need to be updated
     //to let the user specify door location.
     
@@ -30,14 +31,15 @@ public class House {
     //variables
     private FlooringType floorCovering;
     private final Map<Position, Room> rooms;
+    double houseWidth, houseHeight;
 
-    //constructor for loading previously made house from file
+    //old constructor
     public House(Map<Position, Room> rooms, FlooringType ft) {
         this.rooms = new HashMap<>(rooms);
         floorCovering = ft;
     }
     
-    //constructor for creating new house from scratch
+    //new constructor
     public House(double baseRoomWidth, double baseRoomHeight, FlooringType ft) {
         this.rooms = new HashMap<>();
         floorCovering = ft;
@@ -51,13 +53,15 @@ public class House {
         }
         
         Room newRoom = new Room(
-                 Map.of(new Position(BASE_ROOM_X, BASE_ROOM_Y), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, baseRoomHeight)),  //left wall
-                        new Position(BASE_ROOM_X, BASE_ROOM_Y), new Wall(new CollisionRectangle(baseRoomWidth, BASE_WALL_THICKNESS)),   //top wall
-                        new Position((BASE_ROOM_X + baseRoomWidth - BASE_WALL_THICKNESS), BASE_ROOM_Y), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, baseRoomHeight)),    //right wall
-                        new Position(BASE_ROOM_X, (BASE_ROOM_Y + baseRoomHeight - BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle(baseRoomWidth, BASE_WALL_THICKNESS))));  //bottom wall
+                 Map.of(new Position(BASE_ROOM_X, BASE_ROOM_Y), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight-BASE_WALL_THICKNESS))),  //left wall
+                        new Position((BASE_ROOM_X+BASE_WALL_THICKNESS), BASE_ROOM_Y), new Wall(new CollisionRectangle((baseRoomWidth-BASE_WALL_THICKNESS), BASE_WALL_THICKNESS)),   //top wall
+                        new Position((BASE_ROOM_X+baseRoomWidth-BASE_WALL_THICKNESS), (BASE_ROOM_Y+BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight-BASE_WALL_THICKNESS))),    //right wall
+                        new Position(BASE_ROOM_X, (BASE_ROOM_Y+baseRoomHeight-BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle((baseRoomWidth-BASE_WALL_THICKNESS), BASE_WALL_THICKNESS))));  //bottom wall
                 
         newRoom.setIsBaseRoom(true);
         rooms.put(new Position(BASE_ROOM_X, BASE_ROOM_Y), newRoom);
+        houseWidth = baseRoomWidth;
+        houseHeight = baseRoomHeight;
     }
     
     /**
@@ -75,16 +79,22 @@ public class House {
     public void addRoom(double originPointX, double originPointY, double roomWidth, double roomHeight) {
         //create room
         Room newRoom = new Room( 
-                 Map.of(new Position(originPointX, originPointY), new Wall(new CollisionRectangle(WALL_THICKNESS, roomHeight)),  //left wall
-                        new Position(originPointX, originPointY), new Wall(new CollisionRectangle(roomWidth, WALL_THICKNESS)),   //top wall
-                        new Position((originPointX + roomWidth - WALL_THICKNESS), originPointY), new Wall(new CollisionRectangle(WALL_THICKNESS, roomHeight)),    //right wall
-                        new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(new CollisionRectangle(roomWidth, WALL_THICKNESS))));  //bottom wall
+                 Map.of(new Position(originPointX, originPointY), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight-WALL_THICKNESS))),  //left wall
+                        new Position((originPointX-WALL_THICKNESS), originPointY), new Wall(new CollisionRectangle((roomWidth-WALL_THICKNESS), WALL_THICKNESS)),   //top wall
+                        new Position((originPointX + roomWidth - WALL_THICKNESS), (originPointY-WALL_THICKNESS)), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight-WALL_THICKNESS))),    //right wall
+                        new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(new CollisionRectangle((roomWidth-WALL_THICKNESS), WALL_THICKNESS))));  //bottom wall
         //check eligibility
         if (roomWidth*roomHeight < MIN_ROOM_SIZE) {
             System.out.println("Invalid size: room cannot be smaller than 4 sq ft.");
             return; 
         }
-        //if room is outside base room
+
+        if (originPointX < BASE_ROOM_X || originPointY < BASE_ROOM_Y
+                || originPointX > (BASE_ROOM_X+houseWidth)
+                || originPointY > (BASE_ROOM_Y+houseHeight)) {
+            System.out.println("Invalid location: out of bounds.");
+            return;
+        }
         //if room intersects another room without being entirely inside it
         //if room's walls intersect furniture
         
@@ -143,7 +153,7 @@ public class House {
     /**
      * Changes the floor covering of the house.
      * 
-     * @param ft
+     * @param ft the flooring type
      */
     public void setFloorCovering(FlooringType ft) {
         floorCovering = ft;
@@ -162,7 +172,7 @@ public class House {
     /**
      * Returns the room with the given position.
      * 
-     * @param pos
+     * @param pos the position of the room to return
      * @return the room at those coordinates
      */
     public Room getRoom(Position pos) {

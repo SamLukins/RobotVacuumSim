@@ -1,10 +1,12 @@
 package robotvacuum.space;
 
+import java.io.Serializable;
+
 /**
  *
  * @author SamL
  */
-public class Position {
+public class Position implements Serializable {
     private final double x;
     private final double y;
 

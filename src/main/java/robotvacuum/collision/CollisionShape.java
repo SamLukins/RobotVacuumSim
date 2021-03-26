@@ -1,8 +1,8 @@
 package robotvacuum.collision;
 
-import robotvacuum.collision.Shape;
+import java.io.Serializable;
 
-public abstract class CollisionShape {
+public abstract class CollisionShape implements Serializable {
 
     private Shape shape;
 
