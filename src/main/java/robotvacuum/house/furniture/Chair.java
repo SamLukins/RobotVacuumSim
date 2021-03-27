@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import robotvacuum.collision.CollisionTestData;
-import robotvacuum.space.Position;
+import robotvacuum.collision.Position;
 
 /**
  *

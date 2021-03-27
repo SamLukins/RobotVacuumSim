@@ -1,7 +1,5 @@
 package robotvacuum.collision;
 
-import robotvacuum.space.Position;
-
 /**
  *
  * @author SamL

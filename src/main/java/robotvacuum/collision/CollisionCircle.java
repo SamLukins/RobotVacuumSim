@@ -13,6 +13,10 @@ public class CollisionCircle extends CollisionShape {
         this.radius = radius;
     }
 
+    public CollisionCircle(CollisionCircle cCircle) {
+        this(cCircle.getRadius());
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

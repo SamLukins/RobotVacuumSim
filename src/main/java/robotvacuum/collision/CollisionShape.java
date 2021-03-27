@@ -9,4 +9,12 @@ public abstract class CollisionShape {
     protected CollisionShape(Shape shape) {
         this.shape = shape;
     }
+
+    /**
+     * @return the shape
+     */
+    public Shape getShape() {
+        return shape;
+    }
+
 }

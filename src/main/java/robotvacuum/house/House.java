@@ -3,7 +3,7 @@ package robotvacuum.house;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import robotvacuum.space.Position;
+import robotvacuum.collision.Position;
 
 /**
  *
