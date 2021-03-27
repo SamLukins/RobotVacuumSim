@@ -1,22 +1,23 @@
 package robotvacuum.house.furniture;
 
+import robotvacuum.collision.CollisionTestData;
+import robotvacuum.collision.Position;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import robotvacuum.collision.CollisionTestData;
-import robotvacuum.collision.Position;
 
 /**
- *
  * @author Austen Seidler
  */
 
-public class Chair implements Furniture {
+public class Chair implements Furniture, Serializable {
     //TODO: add legs to chairs
 
     private final Map<Position, Leg> legs;
-    
+
     public Chair(Map<Position, Leg> legs) {
         this.legs = new HashMap<>(legs);
     }

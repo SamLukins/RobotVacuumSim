@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.Scanner;
 
 /**
- *
+ * OUTDATED - DO NOT USE
  * @author Austen Seidler
  */
 public class FileManager {

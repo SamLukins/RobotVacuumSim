@@ -1,10 +1,11 @@
 package robotvacuum.collision;
 
+import java.io.Serializable;
+
 /**
- *
  * @author SamL
  */
-public class Position {
+public class Position implements Serializable {
     private final double x;
     private final double y;
 
@@ -18,7 +19,6 @@ public class Position {
     }
 
     /**
-     *
      * @param pos the other position to measure the distance to
      * @return the Pythagorean distance between the positions
      */
@@ -29,9 +29,8 @@ public class Position {
     }
 
     /**
-     *
-     * @param start The start value to interpolate
-     * @param end The end value to interpolate to
+     * @param start   The start value to interpolate
+     * @param end     The end value to interpolate to
      * @param percent The portion between the two to interpolate
      * @return Value that is percent of the way from the start to the end
      */
@@ -40,8 +39,7 @@ public class Position {
     }
 
     /**
-     *
-     * @param pos Position to interpolate to
+     * @param pos     Position to interpolate to
      * @param percent how far to interpolate to the other position
      * @return The position percent of the way from this position to the supplied position
      */
@@ -52,7 +50,6 @@ public class Position {
     }
 
     /**
-     *
      * @param pos the destination position for the angle
      * @return direction from this position to the supplied position in radians from -PI to PI (according to atan2)
      */
@@ -61,7 +58,6 @@ public class Position {
     }
 
     /**
-     *
      * @param pos
      * @return The difference in x value from pos x to this x
      */
@@ -70,7 +66,6 @@ public class Position {
     }
 
     /**
-     *
      * @param pos
      * @return The difference in y value from pos y to this y
      */

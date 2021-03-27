@@ -3,13 +3,14 @@ package robotvacuum.house.furniture;
 import java.util.Collection;
 import java.util.Set;
 import robotvacuum.collision.CollisionTestData;
+import java.io.Serializable;
 
 /**
  *
  * @author Austen Seidler
  */
 
-public class Chest implements Furniture {
+public class Chest implements Furniture, Serializable {
 
     private final CollisionTestData cData;
 
@@ -23,11 +24,11 @@ public class Chest implements Furniture {
     }
 
     /**
-     * Get the value of cRect
+     * Get the value of cData
      *
-     * @return the value of cRect
+     * @return the value of cData
      */
-    public CollisionTestData getcRect() {
+    public CollisionTestData getcData() {
         return cData;
     }
 }

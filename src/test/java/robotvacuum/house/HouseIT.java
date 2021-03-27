@@ -1,20 +1,23 @@
 package robotvacuum.house;
 
-import java.util.Map;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-//import static org.junit.Assert.*;
 import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
+import robotvacuum.io.Serializer;
+
+import java.io.IOException;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- *
  * @author SamL
  */
 public class HouseIT {
@@ -57,90 +60,103 @@ public class HouseIT {
         assertThat(h.getFloorCovering(), is(FlooringType.HARD));
     }
 
-    /**
-     * Test of addRoom method, of class House.
-     */
     @Test
-    public void testAddRoom() {
-//        System.out.println("addRoom");
-//        int originPointX = 0;
-//        int originPointY = 0;
-//        int roomWidth = 0;
-//        int roomHeight = 0;
-//        House instance = new House();
-//        instance.addRoom(originPointX, originPointY, roomWidth, roomHeight);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testSerializer() throws IOException, ClassNotFoundException {
+        House h1 = new House(60, 80, FlooringType.FRIEZE);
+        Serializer s = new Serializer();
+        h1.addRoom(20, 20, 10, 10);
+        h1.addRoom(2, 10, 5, 5);
+        s.serializeHouse(h1, "sTest");
+        House h2 = s.deserializeHouse("sTest");
+        assertNotNull(h2.getRoom(new Position(20, 20)));
+        assertNotNull(h2.getRoom(new Position(2, 10)));
+        assertNull(h2.getRoom(new Position(52, 47)));
+        assertThat(h2.getFloorCovering(), is(FlooringType.FRIEZE));
     }
 
-    /**
-     * Test of removeRoom method, of class House.
-     */
-    @Test
-    public void testRemoveRoom() {
-//        System.out.println("removeRoom");
-//        Room roomToRemove = null;
-//        House instance = new House();
-//        instance.removeRoom(roomToRemove);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setFloorCovering method, of class House.
-     */
-    @Test
-    public void testSetFloorCovering() {
-//        System.out.println("setFloorCovering");
-//        int inputFloor = 0;
-//        House instance = new House();
-//        instance.setFloorCovering(inputFloor);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getFloorCovering method, of class House.
-     */
-    @Test
-    public void testGetFloorCovering() {
-//        System.out.println("getFloorCovering");
-//        House instance = new House();
-//        int expResult = 0;
-//        int result = instance.getFloorCovering();
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getRoom method, of class House.
-     */
-    @Test
-    public void testGetRoom() {
-//        System.out.println("getRoom");
-//        int x = 0;
-//        int y = 0;
-//        House instance = new House();
-//        Room expResult = null;
-//        Room result = instance.getRoom(x, y);
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getAllRooms method, of class House.
-     */
-    @Test
-    public void testGetRooms() {
-//        System.out.println("getAllRooms");
-//        House instance = new House();
-//        ArrayList<Room> expResult = null;
-//        ArrayList<Room> result = instance.getAllRooms();
-//        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
+//    /**
+//     * Test of addRoom method, of class House.
+//     */
+//    @Test
+//    public void testAddRoom() {
+////        System.out.println("addRoom");
+////        int originPointX = 0;
+////        int originPointY = 0;
+////        int roomWidth = 0;
+////        int roomHeight = 0;
+////        House instance = new House();
+////        instance.addRoom(originPointX, originPointY, roomWidth, roomHeight);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of removeRoom method, of class House.
+//     */
+//    @Test
+//    public void testRemoveRoom() {
+////        System.out.println("removeRoom");
+////        Room roomToRemove = null;
+////        House instance = new House();
+////        instance.removeRoom(roomToRemove);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of setFloorCovering method, of class House.
+//     */
+//    @Test
+//    public void testSetFloorCovering() {
+////        System.out.println("setFloorCovering");
+////        int inputFloor = 0;
+////        House instance = new House();
+////        instance.setFloorCovering(inputFloor);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of getFloorCovering method, of class House.
+//     */
+//    @Test
+//    public void testGetFloorCovering() {
+////        System.out.println("getFloorCovering");
+////        House instance = new House();
+////        int expResult = 0;
+////        int result = instance.getFloorCovering();
+////        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of getRoom method, of class House.
+//     */
+//    @Test
+//    public void testGetRoom() {
+////        System.out.println("getRoom");
+////        int x = 0;
+////        int y = 0;
+////        House instance = new House();
+////        Room expResult = null;
+////        Room result = instance.getRoom(x, y);
+////        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of getAllRooms method, of class House.
+//     */
+//    @Test
+//    public void testGetRooms() {
+////        System.out.println("getAllRooms");
+////        House instance = new House();
+////        ArrayList<Room> expResult = null;
+////        ArrayList<Room> result = instance.getAllRooms();
+////        assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
 }
