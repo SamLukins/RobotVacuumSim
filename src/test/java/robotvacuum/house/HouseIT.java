@@ -1,10 +1,6 @@
 package robotvacuum.house;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
 import robotvacuum.io.Serializer;
@@ -12,34 +8,14 @@ import robotvacuum.io.Serializer;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author SamL
  */
 public class HouseIT {
-
-    public HouseIT() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void testCreateHouseSingleRoom() {
@@ -57,7 +33,8 @@ public class HouseIT {
 
         House h = new House(Map.of(new Position(0.0, 0.0), r1), FlooringType.HARD);
 
-        assertThat(h.getFloorCovering(), is(FlooringType.HARD));
+
+        assertEquals(h.getFloorCovering(), FlooringType.HARD);
     }
 
     @Test
@@ -71,7 +48,7 @@ public class HouseIT {
         assertNotNull(h2.getRoom(new Position(20, 20)));
         assertNotNull(h2.getRoom(new Position(2, 10)));
         assertNull(h2.getRoom(new Position(52, 47)));
-        assertThat(h2.getFloorCovering(), is(FlooringType.FRIEZE));
+        assertEquals(h2.getFloorCovering(), FlooringType.FRIEZE);
     }
 
 //    /**

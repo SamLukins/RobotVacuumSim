@@ -1,6 +1,7 @@
 package robotvacuum.collision;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author SamL
@@ -58,7 +59,7 @@ public class Position implements Serializable {
     }
 
     /**
-     * @param pos
+     * @param pos position to get the difference from
      * @return The difference in x value from pos x to this x
      */
     public double xDiff(Position pos) {
@@ -66,7 +67,7 @@ public class Position implements Serializable {
     }
 
     /**
-     * @param pos
+     * @param pos position to get teh difference from
      * @return The difference in y value from pos y to this y
      */
     public double yDiff(Position pos) {
@@ -87,4 +88,24 @@ public class Position implements Serializable {
         return y;
     }
 
+    @Override
+    public String toString() {
+        return "Position{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position position = (Position) o;
+        return Double.compare(position.x, x) == 0 && Double.compare(position.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 }

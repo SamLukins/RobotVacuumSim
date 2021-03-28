@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public abstract class CollisionShape implements Serializable {
 
-    private Shape shape;
+    private final Shape shape;
 
     protected CollisionShape(Shape shape) {
         this.shape = shape;

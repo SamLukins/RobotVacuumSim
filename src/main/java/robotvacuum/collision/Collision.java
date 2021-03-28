@@ -17,6 +17,11 @@ public class Collision {
         this.collisionDirection = collisionDirection;
     }
 
+    public Collision(Collision otherCollision) {
+        this.collisionPosition = otherCollision.getCollisionPosition();
+        this.collisionDirection = otherCollision.getCollisionDirection();
+    }
+
     /**
      * @return the collisionPosition
      */

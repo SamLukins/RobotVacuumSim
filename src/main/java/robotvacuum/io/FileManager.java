@@ -1,9 +1,8 @@
 package robotvacuum.io;
 
 import robotvacuum.house.*;
-import robotvacuum.house.furniture.*;
+
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * OUTDATED - DO NOT USE
@@ -14,20 +13,20 @@ public class FileManager {
     //will need to be updated to include door location in the file.
     //Switching from txt files to JSON would also be preferable.
     
-    /**
-     * Reads a house from a file in the savedHouses folder.
-     * File format:
-     * First line is three numbers: the width, the height, 
-     * and the floor covering's id (1 = hard, 2 = loop pile, 3 = cut pile, 4 = frieze cut pile).
-     * Following lines start with either an 'r' for room
-     * or an 'f' for furniture.
-     * Rooms have four numbers: x, y, width, and height.
-     * Furniture has five numbers: type, x, y, width, and height.
-     * (Furniture types: (chair (1), table (2), or chest (3 or other)).
-     * 
-     * @param houseName The name of the house, used as the file name.
-     * @return The data for the house retrieved from the file.
-     */
+//    /**
+//     * Reads a house from a file in the savedHouses folder.
+//     * File format:
+//     * First line is three numbers: the width, the height,
+//     * and the floor covering's id (1 = hard, 2 = loop pile, 3 = cut pile, 4 = frieze cut pile).
+//     * Following lines start with either an 'r' for room
+//     * or an 'f' for furniture.
+//     * Rooms have four numbers: x, y, width, and height.
+//     * Furniture has five numbers: type, x, y, width, and height.
+//     * (Furniture types: (chair (1), table (2), or chest (3 or other)).
+//     *
+//     * @param houseName The name of the house, used as the file name.
+//     * @return The data for the house retrieved from the file.
+//     */
 //    public House readHouseFromFile(String houseName) {
 //        House h = new House();
 //        Scanner s = null;
@@ -74,11 +73,9 @@ public class FileManager {
      * @param houseName The name of the house, used as the file name.
      */
     public void writeHouseToFile(House h, String houseName) {
-        PrintWriter p = null;
-        
-        try {
-            p = new PrintWriter(new FileWriter("savedHouses/" + houseName + ".txt"));
-            
+
+        try (PrintWriter p = new PrintWriter(new FileWriter("savedHouses/" + houseName + ".txt"))) {
+
 //            p.println((int)h.getWidth() + " " + (int)h.getHeight() + " " + h.getFloorCovering());
 //            for (Room r : h.getAllRooms().values()) {
 //                p.println("r " + (int)r.getX() + " " + (int)r.getY() + " " + (int)r.getWidth() + " " + (int)r.getHeight());
@@ -96,10 +93,6 @@ public class FileManager {
 //            }
         } catch (IOException e) {
             System.err.println(e.getMessage());
-        } finally {
-            if (p != null) {
-                p.close();
-            }
         }
     }
 }
