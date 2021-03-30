@@ -50,6 +50,24 @@ public class HouseIT {
         assertNull(h2.getRoom(new Position(52, 47)));
         assertEquals(h2.getFloorCovering(), FlooringType.FRIEZE);
     }
+    
+    @Test
+    public void testRemoveRoom() {
+        House h1 = new House(60, 80, FlooringType.HARD);
+        h1.addRoom(20, 20, 10, 10);
+        assertNotNull(h1.getRoom(new Position(20, 20)));
+        h1.removeRoom(new Position(20, 20));
+        assertNull(h1.getRoom(new Position(20, 20)));
+    }
+    
+    @Test
+    public void testRemoveFurniture() {
+        House h1 = new House(60, 80, FlooringType.HARD);
+        h1.addChestToRoom(h1.getRoom(new Position(0, 0)), 20, 20, 10, 10);
+        assertNotNull(h1.getFurnitureFromRoom(h1.getRoom(new Position(0, 0)), new Position(20, 20)));
+        h1.removeFurnitureFromRoom(h1.getRoom(new Position(0, 0)), new Position(20, 20));
+        assertNull(h1.getFurnitureFromRoom(h1.getRoom(new Position(0, 0)), new Position(20, 20)));
+    }
 
 //    /**
 //     * Test of addRoom method, of class House.

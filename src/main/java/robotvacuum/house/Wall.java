@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author SamL
  */
 public class Wall implements Serializable {
-
+    //TODO: add doorways to walls
     private CollisionRectangle cRect;
 
     public Wall(CollisionRectangle cRect) {

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -14,7 +15,6 @@ import java.util.stream.Collectors;
  */
 
 public class Chair implements Furniture, Serializable {
-    //TODO: add legs to chairs
 
     private final Map<Position, Leg> legs;
 
@@ -34,4 +34,28 @@ public class Chair implements Furniture, Serializable {
         return legs.entrySet().stream().map(e -> new CollisionTestData(e.getKey(), e.getValue().getcShape())).collect(Collectors.toSet());
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.legs);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Chair other = (Chair) obj;
+        if (!Objects.equals(this.legs, other.legs)) {
+            return false;
+        }
+        return true;
+    }
 }
