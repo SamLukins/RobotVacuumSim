@@ -2,6 +2,7 @@ package robotvacuum.house;
 
 import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
+import robotvacuum.house.furniture.*;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -126,6 +127,32 @@ public class House implements Serializable {
 //        rooms.add(newRoom);
 //        System.out.println("New room added: " + newRoom.toString());
     }
+    
+    public void addChestToRoom(Room room, double originPointX, double originPointY, double furnitureWidth, double furnitureHeight) {
+        for (Room r : rooms.values()) {
+            if (r.equals(room)) {
+                r.addChest(originPointX, originPointY, furnitureWidth, furnitureHeight);
+            }
+        }
+    }
+    
+    public void removeFurnitureFromRoom(Room room, Position pos) {
+        for (Room r : rooms.values()) {
+            if (r.equals(room)) {
+                r.removeFurniture(pos);
+            }
+        }
+    }
+    
+    public Furniture getFurnitureFromRoom(Room room, Position pos) {
+        for (Room r : rooms.values()) {
+            if (r.equals(room)) {
+                return r.getFurniture(pos);
+            }
+        }
+        
+        return null;
+    }
 
     /**
      * Removes a room from the house.
@@ -134,7 +161,7 @@ public class House implements Serializable {
      */
     public void removeRoom(Position pos) {
         for (Position p : rooms.keySet()) {
-            if (p.getX() == pos.getX() && p.getY() == pos.getY()) {
+            if (p.equals(pos)) {
                 if (rooms.get(p).getIsBaseRoom()) {
                     System.out.println("Can't remove base room.");
                     return;
@@ -175,7 +202,7 @@ public class House implements Serializable {
      */
     public Room getRoom(Position pos) {
         for (Position p : rooms.keySet()) {
-            if (p.getX() == pos.getX() && p.getY() == pos.getY()) {
+            if (p.equals(pos)) {
                 return rooms.get(p);
             }
         }

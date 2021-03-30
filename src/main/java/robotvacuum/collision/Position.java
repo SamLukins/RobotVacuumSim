@@ -67,7 +67,7 @@ public class Position implements Serializable {
     }
 
     /**
-     * @param pos position to get teh difference from
+     * @param pos position to get the difference from
      * @return The difference in y value from pos y to this y
      */
     public double yDiff(Position pos) {
