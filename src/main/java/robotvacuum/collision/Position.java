@@ -20,6 +20,14 @@ public class Position implements Serializable {
     }
 
     /**
+     * @param pos the destination position for the angle
+     * @return direction from this position to the supplied position in radians from -PI to PI (according to atan2)
+     */
+    public double directionTo(Position pos) {
+        return Math.atan2(this.yDiff(pos), this.xDiff(pos));
+    }
+
+    /**
      * @param pos the other position to measure the distance to
      * @return the Pythagorean distance between the positions
      */
@@ -27,6 +35,14 @@ public class Position implements Serializable {
         double xDiff = this.x - pos.getX();
         double yDiff = this.y - pos.getY();
         return Math.hypot(xDiff, yDiff);
+    }
+
+    public Position offsetPositionCartesian(Position pos) {
+        return new Position(this.x + pos.x, this.y + pos.y);
+    }
+
+    public Position offsetPositionPolar(double angle, double distance) {
+        return new Position(this.x + Math.cos(angle) * distance, this.y + Math.sin(angle) * distance);
     }
 
     /**
@@ -50,13 +66,7 @@ public class Position implements Serializable {
         return new Position(xPos, yPos);
     }
 
-    /**
-     * @param pos the destination position for the angle
-     * @return direction from this position to the supplied position in radians from -PI to PI (according to atan2)
-     */
-    public double directionTo(Position pos) {
-        return Math.atan2(this.yDiff(pos), this.xDiff(pos));
-    }
+
 
     /**
      * @param pos position to get the difference from
@@ -101,7 +111,8 @@ public class Position implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position position = (Position) o;
-        return Double.compare(position.x, x) == 0 && Double.compare(position.y, y) == 0;
+
+        return Double.compare(position.x, this.x) == 0 && Double.compare(position.y, this.y) == 0;
     }
 
     @Override

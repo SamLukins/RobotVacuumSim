@@ -2,7 +2,7 @@ package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
 
-public class MovementLineSegment implements Movement {
+public class MovementLineSegment implements Movement<MovementLineSegment> {
 
     private final Position startPos;
     private final Position stopPos;
@@ -13,11 +13,11 @@ public class MovementLineSegment implements Movement {
     }
 
     @Override
-    public Position linearInterpolatedPosition(double percent) throws Exception {
+    public Position linearInterpolatedPosition(double percent) {
         if (!(0 <= percent && percent <= 1)) {
-            throw new Exception("Percent out of bounds");
+            throw new IllegalArgumentException("Percent out of bounds");
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return startPos.linearInterpolateTo(stopPos, percent);
     }
 
     /**
@@ -26,7 +26,7 @@ public class MovementLineSegment implements Movement {
      * @throws RuntimeException if the distance is greater than the total movement distance
      */
     @Override
-    public Position fixedDistancePosition(double distance) throws Exception {
+    public Position fixedDistancePosition(double distance) {
         return linearInterpolatedPosition(distance / totalTravelDistance());
     }
 
@@ -36,12 +36,12 @@ public class MovementLineSegment implements Movement {
      * @throws Exception if the distance is less than 0 or greater than the total distance
      */
     @Override
-    public MovementLineSegment partialFixedDistanceMovement(double distance) throws Exception {
+    public MovementLineSegment partialFixedDistanceMovement(double distance) {
         return new MovementLineSegment(startPos, fixedDistancePosition(distance));
     }
 
     @Override
-    public MovementLineSegment partialLinearInterpolatedMovement(double percent) throws Exception {
+    public MovementLineSegment partialLinearInterpolatedMovement(double percent) {
         return new MovementLineSegment(startPos, linearInterpolatedPosition(percent));
     }
 
@@ -51,6 +51,10 @@ public class MovementLineSegment implements Movement {
     @Override
     public double totalTravelDistance() {
         return startPos.distanceTo(stopPos);
+    }
+
+    public double getDirection() {
+        return startPos.directionTo(stopPos);
     }
 
     /**
@@ -63,6 +67,7 @@ public class MovementLineSegment implements Movement {
     /**
      * @return the stopPos
      */
+    @Override
     public Position getStopPos() {
         return stopPos;
     }

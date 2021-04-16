@@ -1,7 +1,6 @@
 package robotvacuum.collision;
 
 /**
- *
  * @author SamL
  */
 public class CollisionCircle extends CollisionShape {

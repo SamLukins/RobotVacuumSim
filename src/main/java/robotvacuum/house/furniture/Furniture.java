@@ -1,10 +1,10 @@
 package robotvacuum.house.furniture;
 
-import java.util.Collection;
 import robotvacuum.collision.CollisionTestData;
 
+import java.util.Collection;
+
 /**
- *
  * @author Austen Seidler
  */
 

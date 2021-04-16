@@ -3,27 +3,28 @@ package robotvacuum.robot;
 import robotvacuum.collision.Collision;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class ActualMovement<T extends Movement> {
     private final ProposedMovement<T> proposedMovement;
     private final Optional<T> actualMovement;
-    private final Optional<Collision> collision;
+    private final Set<Collision> collisions;
 
-    public ActualMovement(ProposedMovement<T> proposedMovement, Optional<T> actualMovement, Optional<Collision> collision) {
+    public ActualMovement(ProposedMovement<T> proposedMovement, Optional<T> actualMovement, Set<Collision> collisions) {
         this.proposedMovement = proposedMovement;
         this.actualMovement = actualMovement;
-        this.collision = collision;
+        this.collisions = collisions;
     }
 
     public ProposedMovement<T> getProposedMovement() {
         return proposedMovement;
     }
 
-    public Optional<T> getActualMovement() {
+    public Optional<T> getMovement() {
         return actualMovement;
     }
 
-    public Optional<Collision> getCollision() {
-        return collision;
+    public Set<Collision> getCollisions() {
+        return collisions;
     }
 }

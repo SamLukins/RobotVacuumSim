@@ -2,12 +2,11 @@ package robotvacuum.robot;
 
 import robotvacuum.collision.Collision;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- *
  * @author SamL
  */
-public interface VacuumStrategy {
-    public <T extends Movement> ProposedMovement<T> vacuum(RobotSimulationState rSimState, Optional<Collision> previousCollision);
+public interface VacuumStrategy<T extends Movement<T>> {
+    public ProposedMovement<T> vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions);
 }

@@ -1,18 +1,21 @@
 package robotvacuum.io;
 
-import robotvacuum.house.*;
+import robotvacuum.house.House;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * OUTDATED - DO NOT USE
+ *
  * @author Austen Seidler
  */
 public class FileManager {
     //TODO: When doors are added to the Room class, readHouseFromFile and WriteHouseToFile
     //will need to be updated to include door location in the file.
     //Switching from txt files to JSON would also be preferable.
-    
+
 //    /**
 //     * Reads a house from a file in the savedHouses folder.
 //     * File format:
@@ -57,19 +60,19 @@ public class FileManager {
 //
 //        return h;
 //    }
-    
+
     /**
      * Writes a house's data to a file in the savedHouses folder.
      * File format:
-     * First line is three numbers: the width, the height, 
+     * First line is three numbers: the width, the height,
      * and the floor covering's id (1 = hard, 2 = loop pile, 3 = cut pile, 4 = frieze cut pile).
      * Following lines start with either an 'r' for room
      * or an 'f' for furniture.
      * Rooms have four numbers: x, y, width, and height.
      * Furniture has five numbers: type, x, y, width, and height.
      * (Furniture types: (chair (1), table (2), or chest (3 or other)).
-     * 
-     * @param h The house to write to the file.
+     *
+     * @param h         The house to write to the file.
      * @param houseName The name of the house, used as the file name.
      */
     public void writeHouseToFile(House h, String houseName) {

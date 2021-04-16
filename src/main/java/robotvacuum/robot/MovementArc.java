@@ -2,7 +2,7 @@ package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
 
-public class MovementArc implements Movement {
+public class MovementArc implements Movement<MovementArc> {
 
     private final Position startPos;
     private final Position arcCenter;
@@ -43,7 +43,8 @@ public class MovementArc implements Movement {
             double angle = distance / radius;
 
             double finalAngle = startingAngle + angle;
-            return new Position(arcCenter.getX() + Math.cos(finalAngle) * radius, arcCenter.getY() + Math.sin(finalAngle) * radius);
+            return arcCenter.offsetPositionPolar(finalAngle, radius);
+//            return new Position(arcCenter.getX() + Math.cos(finalAngle) * radius, arcCenter.getY() + Math.sin(finalAngle) * radius);
         }
     }
 
@@ -74,6 +75,16 @@ public class MovementArc implements Movement {
     @Override
     public double totalTravelDistance() {
         return arcDistance;
+    }
+
+    @Override
+    public Position getStopPos() {
+        double radius = startPos.distanceTo(arcCenter);
+        double startingAngle = arcCenter.directionTo(startPos);
+        double angle = arcDistance / radius;
+
+        double finalAngle = startingAngle + angle;
+        return arcCenter.offsetPositionPolar(finalAngle, radius);
     }
 
     /**

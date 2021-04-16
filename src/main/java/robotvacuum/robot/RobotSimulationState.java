@@ -3,7 +3,6 @@ package robotvacuum.robot;
 import robotvacuum.collision.Position;
 
 /**
- *
  * @author SamL
  */
 public class RobotSimulationState {
@@ -19,7 +18,11 @@ public class RobotSimulationState {
     }
 
     public void updatePosition(Movement mov) {
+        this.position.offsetPositionCartesian(mov.getStopPos());
+    }
 
+    public <T extends Movement<T>> void updatePosition(ActualMovement<T> mov) {
+        mov.getMovement().ifPresent(this::updatePosition);
     }
 
     /**

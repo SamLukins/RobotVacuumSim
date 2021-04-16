@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 public class Room implements Serializable {
     //TODO: add doorways to rooms
     private final Map<Position, Wall> walls;
-    boolean isBaseRoom;
+//    boolean isBaseRoom;
 
     public Room(Map<Position, Wall> walls) {
         this.walls = new HashMap<>(walls);
-        isBaseRoom = false;
+//        isBaseRoom = false;
     }
 
     public Room(Room room) {
@@ -26,7 +26,7 @@ public class Room implements Serializable {
                 .collect(Collectors.toMap(
                         e -> new Position(e.getKey()),
                         e -> new Wall(e.getValue())));
-        this.isBaseRoom = room.isBaseRoom;
+//        this.isBaseRoom = room.isBaseRoom;
     }
 
     /**
@@ -36,17 +36,17 @@ public class Room implements Serializable {
         return walls;
     }
 
-    /**
-     * @return whether the room is the base room
-     */
-    public boolean getIsBaseRoom() {
-        return isBaseRoom;
-    }
-
-    /**
-     * @param isBaseRoom whether the room is the base room
-     */
-    public void setIsBaseRoom(boolean isBaseRoom) {
-        this.isBaseRoom = isBaseRoom;
-    }
+//    /**
+//     * @return whether the room is the base room
+//     */
+//    public boolean getIsBaseRoom() {
+//        return isBaseRoom;
+//    }
+//
+//    /**
+//     * @param isBaseRoom whether the room is the base room
+//     */
+//    public void setIsBaseRoom(boolean isBaseRoom) {
+//        this.isBaseRoom = isBaseRoom;
+//    }
 }

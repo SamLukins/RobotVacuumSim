@@ -1,12 +1,12 @@
 package robotvacuum.house.furniture;
 
+import robotvacuum.collision.CollisionTestData;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
-import robotvacuum.collision.CollisionTestData;
-import java.io.Serializable;
 
 /**
- *
  * @author Austen Seidler
  */
 

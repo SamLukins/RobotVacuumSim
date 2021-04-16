@@ -1,10 +1,17 @@
 package robotvacuum.collision;
 
+import robotvacuum.house.House;
 import robotvacuum.robot.ActualMovement;
 import robotvacuum.robot.Movement;
 import robotvacuum.robot.ProposedMovement;
+import robotvacuum.robot.RobotVacuum;
+import robotvacuum.robot.VacuumStrategy;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author SamL
@@ -22,6 +29,29 @@ public class CollisionDetector {
             return detectStaticCollisionBetweenRectangles(ctd1, ctd2);
         }
         throw new UnsupportedOperationException("Can only detect collisions between a combination of rectangles and circles");
+    }
+
+    public Set<Collision> detectStaticCollision(CollisionTestData ctd1, Set<CollisionTestData> ctds) {
+        return ctds.stream()
+                .flatMap(ctd -> detectStaticCollision(ctd1, ctd).stream())
+                .collect(Collectors.toSet());
+    }
+
+    public <T extends Movement<T>> Set<Collision> detectStaticCollision(RobotVacuum<VacuumStrategy<T>> rv, House house) {
+        return detectStaticCollision(
+                new CollisionTestData(
+                        rv.getrSimState().getPosition(),
+                        rv.getProperties().getcCircle()
+                ),
+                house.getRooms().entrySet().stream().flatMap(
+                        entry -> entry
+                                .getValue()
+                                .getWalls()
+                                .entrySet()
+                                .stream()
+                                .map(wallEntry -> new CollisionTestData(entry.getKey().offsetPositionCartesian(wallEntry.getKey()),
+                                        wallEntry.getValue().getcRect()))
+                ).collect(Collectors.toSet()));
     }
 
     Optional<Collision> detectStaticCollisionBetweenRectangles(CollisionTestData ctd1, CollisionTestData ctd2) {
@@ -44,7 +74,11 @@ public class CollisionDetector {
 
             Position overlapRectangleCenter = new Position((leftSideX + rightSideX) / 2, (topSideY + bottomSideY) / 2);
 
-            return Optional.of(new Collision(overlapRectangleCenter, ctd1.getPos().directionTo(overlapRectangleCenter)));
+            return Optional.of(new Collision(
+                    overlapRectangleCenter,
+                    ctd1.getPos().directionTo(overlapRectangleCenter),
+                    ctd1,
+                    ctd2));
         }
         return Optional.empty();
     }
@@ -64,9 +98,9 @@ public class CollisionDetector {
                 final double collisionYPos = ctd1.getPos().getY() + (Math.signum(yDiff) * (cRect.getHeight() / 2));
 
                 final Position collisionPosition = new Position(ctd1.getPos().getX(), collisionYPos);
-                final double collisionDirection = Math.signum(yDiff) * Math.PI / 2;
+                final double collisionDirection = -Math.signum(yDiff) * Math.PI / 2;
 
-                return Optional.of(new Collision(collisionPosition, collisionDirection));
+                return Optional.of(new Collision(collisionPosition, collisionDirection, ctd1, ctd2));
 
                 //if side no corner
             } else if (Math.abs(yDiff) <= (cRect.getHeight() / 2)) {
@@ -78,7 +112,7 @@ public class CollisionDetector {
                     collisionDirection = Math.PI;
                 }
 
-                return Optional.of(new Collision(collisionPosition, collisionDirection));
+                return Optional.of(new Collision(collisionPosition, collisionDirection, ctd1, ctd2));
 
                 //if in corner
             } else {
@@ -88,7 +122,7 @@ public class CollisionDetector {
                 );
 
                 if (ctd1.getPos().distanceTo(cornerPos) <= circleRadius) {
-                    return Optional.of(new Collision(cornerPos, ctd1.getPos().directionTo(cornerPos)));
+                    return Optional.of(new Collision(cornerPos, ctd1.getPos().directionTo(cornerPos), ctd1, ctd2));
                 } else {
                     return Optional.empty();
                 }
@@ -104,7 +138,8 @@ public class CollisionDetector {
                         //swap the collision direction but make sure it stays in -PI to PI
                         col.getCollisionDirection() <= 0
                                 ? col.getCollisionDirection() + Math.PI
-                                : col.getCollisionDirection() - Math.PI));
+                                : col.getCollisionDirection() - Math.PI,
+                        ctd1, ctd2));
     }
 
     Optional<Collision> detectStaticCollisionBetweenCircles(CollisionTestData ctd1, CollisionTestData ctd2) {
@@ -119,47 +154,57 @@ public class CollisionDetector {
             Position collisionPosition = ctd1.getPos().linearInterpolateTo(ctd2.getPos(), relativeSize);
             double collisionDirection = ctd1.getPos().directionTo(ctd2.getPos());
 
-            return Optional.of(new Collision(collisionPosition, collisionDirection));
+            return Optional.of(new Collision(collisionPosition, collisionDirection, ctd1, ctd2));
         }
         return Optional.empty();
     }
 
-    public <T extends Movement> ActualMovement<T> detectDynamicCollision(CollisionTestData ctd1, CollisionTestData ctd2, ProposedMovement<T> proposedMovement) {
+    public <T extends Movement<T>> ActualMovement<T> detectDynamicCollision(CollisionTestData ctd1, CollisionTestData ctd2, ProposedMovement<T> proposedMovement) {
+        return detectDynamicCollision(ctd1, Set.of(ctd2), proposedMovement);
+    }
+
+    public <T extends Movement<T>> ActualMovement<T> detectDynamicCollision(CollisionTestData ctd1, Set<CollisionTestData> ctds, ProposedMovement<T> proposedMovement) {
         try {
             //if continue colliding
-            Optional<Collision> startCollision = detectStaticCollision(ctd1, ctd2);
-            if (startCollision.isPresent()) {
-                //TODO: maybe make this fixed distance test instead of percent based on proposed movement
+            Set<Collision> startCollisions = detectStaticCollision(ctd1, ctds);
+            if (!startCollisions.isEmpty()) {
                 Position collisionTestPosition = proposedMovement.getMov().fixedDistancePosition(Math.min(0.005, proposedMovement.getMov().totalTravelDistance()));
-                Optional<Collision> movementCollision = detectStaticCollision(new CollisionTestData(collisionTestPosition, ctd1.getcShape()), ctd2);
+                Set<Collision> movementCollisions = detectStaticCollision(new CollisionTestData(collisionTestPosition, ctd1.getcShape()), ctds);
 
-                if (movementCollision.isPresent()) {
+
+                //if movement would continue collision
+                if (!movementCollisions.isEmpty()) {
                     //already colliding and movement continues colliding
-                    return new ActualMovement<>(proposedMovement, Optional.empty(), startCollision);
+                    return new ActualMovement<>(proposedMovement, Optional.empty(), startCollisions);
                 }
             }
 
             //check every centimeter for a collision
             double initialCheckResolution = 0.01;
             for (double travelDistance = 0; travelDistance <= proposedMovement.getMov().totalTravelDistance(); travelDistance += initialCheckResolution) {
-                Optional<Collision> testCollision = detectStaticCollision(
+                Set<Collision> testCollisions = detectStaticCollision(
                         new CollisionTestData(proposedMovement.getMov().fixedDistancePosition(travelDistance), ctd1.getcShape()),
-                        ctd2);
+                        ctds);
 
                 //if there is a collision
-                if (testCollision.isPresent()) {
+                if (!testCollisions.isEmpty()) {
                     //get a more accurate collision
                     //millimeter resolution
                     double resolution = 0.001;
-                    MovementCollision finalCollision = binarySearchDynamicCollision(
-                            ctd1, ctd2, proposedMovement, travelDistance - initialCheckResolution, travelDistance,
-                            testCollision.get(), resolution);
+
+                    binarySearchDynamicCollision(
+                            ctd1, ctds, proposedMovement, travelDistance - initialCheckResolution, travelDistance, new HashSet<>(), resolution
+                    );
+
+                    MovementCollisions finalCollision = binarySearchDynamicCollision(
+                            ctd1, ctds, proposedMovement, travelDistance - initialCheckResolution, travelDistance,
+                            testCollisions, resolution);
 
                     //create and return the actual resulting movement to the collision
                     return new ActualMovement<>(
                             proposedMovement,
-                            proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getCollisionDistance()),
-                            Optional.of(finalCollision.getCollision()));
+                            Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getCollisionDistance())),
+                            finalCollision.getCollisions());
                 }
             }
         } catch (Exception e) {
@@ -168,10 +213,25 @@ public class CollisionDetector {
         }
 
         //no collision detected, so the actual movement is the entire proposed movement
-        return new ActualMovement<>(proposedMovement, Optional.of(proposedMovement.getMov()), Optional.empty());
+        return new ActualMovement<>(proposedMovement, Optional.of(proposedMovement.getMov()), Collections.emptySet());
     }
 
-    <T extends Movement> MovementCollision binarySearchDynamicCollision(
+    public <T extends Movement<T>> ActualMovement<T> detectDynamicCollision(RobotVacuum<VacuumStrategy<T>> rv, House house, ProposedMovement<T> proposedMovement) {
+        return detectDynamicCollision(
+                new CollisionTestData(rv.getrSimState().getPosition(), rv.getProperties().getcCircle()),
+                house.getRooms().entrySet().stream().flatMap(
+                        entry -> entry
+                                .getValue()
+                                .getWalls()
+                                .entrySet()
+                                .stream()
+                                .map(wallEntry -> new CollisionTestData(entry.getKey().offsetPositionCartesian(wallEntry.getKey()),
+                                        wallEntry.getValue().getcRect()))
+                ).collect(Collectors.toSet()),
+                proposedMovement);
+    }
+
+    <T extends Movement<T>> MovementCollisions binarySearchDynamicCollision(
             CollisionTestData ctd1,
             CollisionTestData ctd2,
             ProposedMovement<T> proposedMovement,
@@ -179,22 +239,34 @@ public class CollisionDetector {
             double distanceToCollision,
             Collision collision,
             double resolution) {
+        return binarySearchDynamicCollision(ctd1, Set.of(ctd2), proposedMovement, distanceToNoCollision, distanceToCollision, Set.of(collision), resolution);
+    }
+
+    <T extends Movement<T>> MovementCollisions binarySearchDynamicCollision(
+            CollisionTestData ctd1,
+            Set<CollisionTestData> ctds,
+            ProposedMovement<T> proposedMovement,
+            double distanceToNoCollision,
+            double distanceToCollision,
+            Set<Collision> collisions,
+            double resolution) {
         double startOffset = distanceToNoCollision;
         double halfway = (distanceToNoCollision + distanceToCollision) / 2;
 
         try {
-            //if we would move less than the given resolution, exit search and return collision
+            //if we would move less than the given resolution, exit search and return collisions
             //recursive exit condition
             double potentialMovement = (halfway - startOffset) / 2;
             if (potentialMovement < resolution) {
-                return new MovementCollision(collision, distanceToCollision);
+                return new MovementCollisions(collisions, distanceToCollision);
             }
 
-            Optional<Collision> halfwayCollision = detectStaticCollision(new CollisionTestData(proposedMovement.getMov().fixedDistancePosition(halfway), ctd1.getcShape()), ctd2);
-            if (halfwayCollision.isPresent()) {
-                return binarySearchDynamicCollision(ctd1, ctd2, proposedMovement, distanceToNoCollision, halfway, halfwayCollision.get(), resolution);
+            Set<Collision> halfwayCollisions =
+                    detectStaticCollision(new CollisionTestData(proposedMovement.getMov().fixedDistancePosition(halfway), ctd1.getcShape()), ctds);
+            if (!halfwayCollisions.isEmpty()) {
+                return binarySearchDynamicCollision(ctd1, ctds, proposedMovement, distanceToNoCollision, halfway, halfwayCollisions, resolution);
             } else {
-                return binarySearchDynamicCollision(ctd1, ctd2, proposedMovement, halfway, distanceToCollision, collision, resolution);
+                return binarySearchDynamicCollision(ctd1, ctds, proposedMovement, halfway, distanceToCollision, collisions, resolution);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

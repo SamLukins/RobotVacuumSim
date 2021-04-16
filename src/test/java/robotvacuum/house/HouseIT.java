@@ -3,14 +3,10 @@ package robotvacuum.house;
 import org.junit.jupiter.api.Test;
 import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
-import robotvacuum.io.Serializer;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author SamL
@@ -37,19 +33,19 @@ public class HouseIT {
         assertEquals(h.getFloorCovering(), FlooringType.HARD);
     }
 
-    @Test
-    public void testSerializer() throws IOException, ClassNotFoundException {
-        House h1 = new House(60, 80, FlooringType.FRIEZE);
-        Serializer s = new Serializer();
-        h1.addRoom(20, 20, 10, 10);
-        h1.addRoom(2, 10, 5, 5);
-        s.serializeHouse(h1, "sTest");
-        House h2 = s.deserializeHouse("sTest");
-        assertNotNull(h2.getRoom(new Position(20, 20)));
-        assertNotNull(h2.getRoom(new Position(2, 10)));
-        assertNull(h2.getRoom(new Position(52, 47)));
-        assertEquals(h2.getFloorCovering(), FlooringType.FRIEZE);
-    }
+//    @Test
+//    public void testSerializer() throws IOException, ClassNotFoundException {
+//        House h1 = new House(60, 80, FlooringType.FRIEZE);
+//        Serializer s = new Serializer();
+//        h1.addRoom(20, 20, 10, 10);
+//        h1.addRoom(2, 10, 5, 5);
+//        s.serializeHouse(h1, "sTest");
+//        House h2 = s.deserializeHouse("sTest");
+//        assertNotNull(h2.getRoom(new Position(20, 20)));
+//        assertNotNull(h2.getRoom(new Position(2, 10)));
+//        assertNull(h2.getRoom(new Position(52, 47)));
+//        assertEquals(h2.getFloorCovering(), FlooringType.FRIEZE);
+//    }
 
 //    /**
 //     * Test of addRoom method, of class House.

@@ -19,11 +19,6 @@ public class House implements Serializable {
     //constants
     //TODO: move to enum
     private static final double WALL_THICKNESS = 2;
-    private static final double BASE_WALL_THICKNESS = 5;
-    private static final double MIN_BASE_ROOM_SIZE = 200;
-    private static final double MAX_BASE_ROOM_SIZE = 8000;
-    private static final double DEFAULT_BASE_ROOM_WIDTH = 50;
-    private static final double DEFAULT_BASE_ROOM_HEIGHT = 50;
     private static final double MIN_ROOM_SIZE = 4;
     private static final double BASE_ROOM_X = 0;
     private static final double BASE_ROOM_Y = 0;
@@ -39,28 +34,9 @@ public class House implements Serializable {
         floorCovering = ft;
     }
 
-    //new constructor
-    public House(double baseRoomWidth, double baseRoomHeight, FlooringType ft) {
-        this.rooms = new HashMap<>();
-        floorCovering = ft;
-        if (baseRoomWidth * baseRoomHeight < MIN_BASE_ROOM_SIZE) {
-            System.out.println("Given base room too small, using default parameters instead.");
-            baseRoomWidth = DEFAULT_BASE_ROOM_WIDTH;
-        } else if (baseRoomWidth * baseRoomHeight > MAX_BASE_ROOM_SIZE) {
-            System.out.println("Given base room too large, using default parameters instead.");
-            baseRoomHeight = DEFAULT_BASE_ROOM_HEIGHT;
-        }
-
-        Room newRoom = new Room(
-                Map.of(new Position(BASE_ROOM_X, BASE_ROOM_Y), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight - BASE_WALL_THICKNESS))),  //left wall
-                        new Position((BASE_ROOM_X + BASE_WALL_THICKNESS), BASE_ROOM_Y), new Wall(new CollisionRectangle((baseRoomWidth - BASE_WALL_THICKNESS), BASE_WALL_THICKNESS)),   //top wall
-                        new Position((BASE_ROOM_X + baseRoomWidth - BASE_WALL_THICKNESS), (BASE_ROOM_Y + BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight - BASE_WALL_THICKNESS))),    //right wall
-                        new Position(BASE_ROOM_X, (BASE_ROOM_Y + baseRoomHeight - BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle((baseRoomWidth - BASE_WALL_THICKNESS), BASE_WALL_THICKNESS))));  //bottom wall
-
-        newRoom.setIsBaseRoom(true);
-        rooms.put(new Position(BASE_ROOM_X, BASE_ROOM_Y), newRoom);
-        houseWidth = baseRoomWidth;
-        houseHeight = baseRoomHeight;
+    public void addRoom(final Position pos, final Room r) {
+        //TODO: Add bounds checks
+        rooms.put(pos, r);
     }
 
     /**
@@ -101,30 +77,6 @@ public class House implements Serializable {
         rooms.put(new Position(originPointX, originPointY), newRoom);
         System.out.println("Room added.");
 
-//        throw new UnsupportedOperationException("Not implemented yet. Yell at Team 4 Robot Vacuum.");
-//        Room newRoom = new Room(originPointX, originPointY, roomWidth, roomHeight);
-//        if (newRoom.getWidth()*newRoom.getHeight() < 4) {
-//            System.out.println("Invalid size: room cannot be smaller than 4 sq ft.");
-//            return;
-//        }
-//        if (!(this.contains(newRoom))) {
-//            System.out.println("Invalid location: room cannot extend outside house");
-//            return;
-//        }
-//        for (Room r : rooms) {
-//            if (newRoom.intersects(r) && !(newRoom.contains(r) || r.contains(newRoom))) {
-//                System.out.println("Invalid location: room wall cannot intersect other room wall");
-//                return;
-//            }
-//        }
-//        for (Furniture f : furniture) {
-//            if (newRoom.intersects(f) && !(newRoom.contains(f))) {
-//                System.out.println("Invalid location: room wall cannot intersect furniture");
-//                return;
-//            }
-//        }
-//        rooms.add(newRoom);
-//        System.out.println("New room added: " + newRoom.toString());
     }
 
     /**
@@ -133,19 +85,7 @@ public class House implements Serializable {
      * @param pos the room to be removed from the house
      */
     public void removeRoom(Position pos) {
-        for (Position p : rooms.keySet()) {
-            if (p.getX() == pos.getX() && p.getY() == pos.getY()) {
-                if (rooms.get(p).getIsBaseRoom()) {
-                    System.out.println("Can't remove base room.");
-                    return;
-                } else {
-                    rooms.remove(p);
-                    System.out.println("Room removed:" + p);
-                    return;
-                }
-            }
-        }
-        System.out.println("Room not found.");
+        rooms.remove(pos);
     }
 
     /**

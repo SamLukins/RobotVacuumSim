@@ -1,12 +1,12 @@
 package robotvacuum.robot;
 
-import java.util.EnumMap;
-import java.util.Map;
 import robotvacuum.collision.CollisionCircle;
 import robotvacuum.house.FlooringType;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
- *
  * @author SamL
  */
 public class RobotVacuumProperties {
@@ -19,12 +19,12 @@ public class RobotVacuumProperties {
     private final int maxBatteryLife;
 
     public RobotVacuumProperties(CollisionCircle cCircle,
-            double vacuumWidth,
-            Map<FlooringType, Double> vacuumEfficiency,
-            double whiskersWidth,
-            Map<FlooringType, Double> whiskersEfficiency,
-            double speed,
-            int maxBatteryLife) {
+                                 double vacuumWidth,
+                                 Map<FlooringType, Double> vacuumEfficiency,
+                                 double whiskersWidth,
+                                 Map<FlooringType, Double> whiskersEfficiency,
+                                 double speed,
+                                 int maxBatteryLife) {
         this.cCircle = new CollisionCircle(cCircle);
         this.vacuumWidth = vacuumWidth;
         this.vacuumEfficiency = new EnumMap<>(vacuumEfficiency);

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-class CollisionDetectorTest {
+class CollisionDetectorStaticTest {
 
     final CollisionDetector collisionDetector = new CollisionDetector();
     final double root2 = Math.sqrt(2.0);
@@ -67,7 +67,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(1.5, 1.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(0, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(0, collision.getCollisionDirection(), 0.000001, "collision direction is not correct");
     }
 
     @Test
@@ -119,7 +119,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(1.0, 1.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(0.0, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(0.0, collision.getCollisionDirection(), Math.ulp(0.0), "collision direction is not correct");
     }
 
     @Test
@@ -155,7 +155,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(2.0, 1.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(0.0, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(0.0, collision.getCollisionDirection(), Math.ulp(0.0), "collision direction is not correct");
     }
 
     @Test
@@ -218,7 +218,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(2.0, 1.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(Math.PI, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(Math.PI, collision.getCollisionDirection(), Math.ulp(-Math.PI), "collision direction is not correct");
     }
 
     @Test
@@ -231,7 +231,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(2.0, 1.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(0.0, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(0.0, collision.getCollisionDirection(), Math.ulp(0.0), "collision direction is not correct");
     }
 
     @Test
@@ -244,7 +244,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(1.0, 2.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(-Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
     }
 
     @Test
@@ -257,7 +257,7 @@ class CollisionDetectorTest {
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
         assertEquals(new Position(1.0, 2.0), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(-Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
+        assertEquals(Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
     }
 
     private CollisionTestData generateMockCollisionRectangleTestData(double x, double y, double width, double height) {
