@@ -13,7 +13,6 @@ import robotvacuum.house.Wall;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,7 +48,7 @@ class RobotVacuumIntegrationTest {
     @Test
     void canCreateRobotVacuum() {
 
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(5.0, 5.0),
@@ -67,7 +66,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotProposesMovement() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(2.0, 5.0),
@@ -77,7 +76,7 @@ class RobotVacuumIntegrationTest {
                 new RandomVacuumStrategy(defaultSeed, 3.0)
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
         assertEquals(0.0, proposedVacuumMovement.getMov().getStartPos().directionTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
         assertEquals(3.0, proposedVacuumMovement.getMov().getStartPos().distanceTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
@@ -85,7 +84,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotCanMove() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(2.0, 5.0),
@@ -106,14 +105,14 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
         assertEquals(0.0, proposedVacuumMovement.getMov().getStartPos().directionTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
         assertEquals(3.0, proposedVacuumMovement.getMov().getStartPos().distanceTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
 
 
         CollisionDetector cd = new CollisionDetector();
-        ActualMovement<MovementLineSegment> actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
+        ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertTrue(collisions.isEmpty());
@@ -125,7 +124,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotCollidesWithSingleWall() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(5.0, 5.0),
@@ -145,11 +144,11 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
-        ActualMovement<MovementLineSegment> actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
+        ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertFalse(collisions.isEmpty());
@@ -163,7 +162,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotCollidesWithSingleWallMultipleWallsPresent() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(5.0, 5.0),
@@ -184,11 +183,11 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
-        ActualMovement<MovementLineSegment> actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
+        ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertFalse(collisions.isEmpty());
@@ -202,7 +201,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotCollidesWithSecondWall() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(5.0, 5.0),
@@ -223,11 +222,11 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
-        ActualMovement<MovementLineSegment> actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
+        ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertFalse(collisions.isEmpty());
@@ -241,7 +240,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotCollidesWithWallCorner() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(5.0, 5.0),
@@ -262,13 +261,13 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
-        MovementLineSegment mov = proposedVacuumMovement.getMov();
+        Movement mov = proposedVacuumMovement.getMov();
         assertEquals(Math.PI / 4, mov.getStartPos().directionTo(mov.getStopPos()));
 
         CollisionDetector cd = new CollisionDetector();
-        ActualMovement<MovementLineSegment> actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
+        ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertFalse(collisions.isEmpty());
@@ -283,7 +282,7 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void robotMoveAfterCollision() {
-        RobotVacuum<VacuumStrategy<MovementLineSegment>> rv = new RobotVacuum<>(
+        RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
                         new Position(5.0, 5.0),
@@ -303,11 +302,11 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement<MovementLineSegment> proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
-        ActualMovement<MovementLineSegment> actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
+        ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertFalse(collisions.isEmpty());
@@ -315,8 +314,8 @@ class RobotVacuumIntegrationTest {
 
         rv.getrSimState().updatePosition(actualMovement);
 
-        ProposedMovement<MovementLineSegment> secondVacuum = rv.getVacuumStrategy().vacuum(rv.getrSimState(), collisions);
-        ActualMovement<MovementLineSegment> actualMovement2 = cd.detectDynamicCollision(rv, testHouse, secondVacuum);
+        ProposedMovement secondVacuum = rv.getVacuumStrategy().vacuum(rv.getrSimState(), collisions);
+        ActualMovement actualMovement2 = cd.detectDynamicCollision(rv, testHouse, secondVacuum);
 
         assertTrue(actualMovement2.getCollisions().isEmpty());
     }

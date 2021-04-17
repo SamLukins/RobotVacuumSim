@@ -6,7 +6,7 @@ import robotvacuum.collision.Collision;
 import java.util.Collection;
 import java.util.Random;
 
-public class RandomVacuumStrategy implements VacuumStrategy<MovementLineSegment> {
+public class RandomVacuumStrategy implements VacuumStrategy {
 
     private final double defaultVacuumDistance;
     private double previousDirection = 0.0;
@@ -23,9 +23,9 @@ public class RandomVacuumStrategy implements VacuumStrategy<MovementLineSegment>
     }
 
     @Override
-    public ProposedMovement<MovementLineSegment> vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions) {
+    public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions) {
         if (previousCollisions.isEmpty()) {
-            return new ProposedMovement<>(
+            return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),
                             rSimState.getPosition().offsetPositionPolar(previousDirection, defaultVacuumDistance)));
@@ -39,7 +39,7 @@ public class RandomVacuumStrategy implements VacuumStrategy<MovementLineSegment>
 
             double direction = ((random.nextDouble() * (maxPossibleDirection - minPossibleDirection)) + minPossibleDirection) % (2 * Math.PI);
 
-            return new ProposedMovement<>(
+            return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),
                             rSimState.getPosition().offsetPositionPolar(direction, defaultVacuumDistance)));

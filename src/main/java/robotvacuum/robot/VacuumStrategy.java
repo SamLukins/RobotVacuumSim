@@ -7,6 +7,6 @@ import java.util.Collection;
 /**
  * @author SamL
  */
-public interface VacuumStrategy<T extends Movement<T>> {
-    public ProposedMovement<T> vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions);
+public interface VacuumStrategy {
+    public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions);
 }

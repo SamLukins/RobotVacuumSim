@@ -37,7 +37,7 @@ public class CollisionDetector {
                 .collect(Collectors.toSet());
     }
 
-    public <T extends Movement<T>> Set<Collision> detectStaticCollision(RobotVacuum<VacuumStrategy<T>> rv, House house) {
+    public Set<Collision> detectStaticCollision(RobotVacuum<VacuumStrategy> rv, House house) {
         return detectStaticCollision(
                 new CollisionTestData(
                         rv.getrSimState().getPosition(),
@@ -159,11 +159,11 @@ public class CollisionDetector {
         return Optional.empty();
     }
 
-    public <T extends Movement<T>> ActualMovement<T> detectDynamicCollision(CollisionTestData ctd1, CollisionTestData ctd2, ProposedMovement<T> proposedMovement) {
+    public ActualMovement detectDynamicCollision(CollisionTestData ctd1, CollisionTestData ctd2, ProposedMovement proposedMovement) {
         return detectDynamicCollision(ctd1, Set.of(ctd2), proposedMovement);
     }
 
-    public <T extends Movement<T>> ActualMovement<T> detectDynamicCollision(CollisionTestData ctd1, Set<CollisionTestData> ctds, ProposedMovement<T> proposedMovement) {
+    public ActualMovement detectDynamicCollision(CollisionTestData ctd1, Set<CollisionTestData> ctds, ProposedMovement proposedMovement) {
         try {
             //if continue colliding
             Set<Collision> startCollisions = detectStaticCollision(ctd1, ctds);
@@ -175,7 +175,7 @@ public class CollisionDetector {
                 //if movement would continue collision
                 if (!movementCollisions.isEmpty()) {
                     //already colliding and movement continues colliding
-                    return new ActualMovement<>(proposedMovement, Optional.empty(), startCollisions);
+                    return new ActualMovement(proposedMovement, Optional.empty(), startCollisions);
                 }
             }
 
@@ -201,7 +201,7 @@ public class CollisionDetector {
                             testCollisions, resolution);
 
                     //create and return the actual resulting movement to the collision
-                    return new ActualMovement<>(
+                    return new ActualMovement(
                             proposedMovement,
                             Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getCollisionDistance())),
                             finalCollision.getCollisions());
@@ -213,10 +213,10 @@ public class CollisionDetector {
         }
 
         //no collision detected, so the actual movement is the entire proposed movement
-        return new ActualMovement<>(proposedMovement, Optional.of(proposedMovement.getMov()), Collections.emptySet());
+        return new ActualMovement(proposedMovement, Optional.of(proposedMovement.getMov()), Collections.emptySet());
     }
 
-    public <T extends Movement<T>> ActualMovement<T> detectDynamicCollision(RobotVacuum<VacuumStrategy<T>> rv, House house, ProposedMovement<T> proposedMovement) {
+    public ActualMovement detectDynamicCollision(RobotVacuum<VacuumStrategy> rv, House house, ProposedMovement proposedMovement) {
         return detectDynamicCollision(
                 new CollisionTestData(rv.getrSimState().getPosition(), rv.getProperties().getcCircle()),
                 house.getRooms().entrySet().stream().flatMap(
@@ -231,10 +231,10 @@ public class CollisionDetector {
                 proposedMovement);
     }
 
-    <T extends Movement<T>> MovementCollisions binarySearchDynamicCollision(
+    MovementCollisions binarySearchDynamicCollision(
             CollisionTestData ctd1,
             CollisionTestData ctd2,
-            ProposedMovement<T> proposedMovement,
+            ProposedMovement proposedMovement,
             double distanceToNoCollision,
             double distanceToCollision,
             Collision collision,
@@ -242,10 +242,10 @@ public class CollisionDetector {
         return binarySearchDynamicCollision(ctd1, Set.of(ctd2), proposedMovement, distanceToNoCollision, distanceToCollision, Set.of(collision), resolution);
     }
 
-    <T extends Movement<T>> MovementCollisions binarySearchDynamicCollision(
+    MovementCollisions binarySearchDynamicCollision(
             CollisionTestData ctd1,
             Set<CollisionTestData> ctds,
-            ProposedMovement<T> proposedMovement,
+            ProposedMovement proposedMovement,
             double distanceToNoCollision,
             double distanceToCollision,
             Set<Collision> collisions,

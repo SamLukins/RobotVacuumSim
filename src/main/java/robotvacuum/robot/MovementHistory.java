@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MovementHistory<M extends Movement<M>> {
+public class MovementHistory {
 
-    private List<M> movements = new ArrayList<>();
+    private List<Movement> movements = new ArrayList<>();
 
-    public void addMovement(M m) {
+    public void addMovement(Movement m) {
         movements.add(m);
     }
 
-    public List<M> getMovements() {
+    public List<Movement> getMovements() {
         return Collections.unmodifiableList(movements);
     }
 }

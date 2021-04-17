@@ -1,13 +1,13 @@
 package robotvacuum.robot;
 
-public class ProposedMovement<T extends Movement> {
-    private final T mov;
+public class ProposedMovement {
+    private final Movement mov;
 
-    public ProposedMovement(T mov) {
+    public ProposedMovement(Movement mov) {
         this.mov = mov;
     }
 
-    public T getMov() {
+    public Movement getMov() {
         return mov;
     }
 }

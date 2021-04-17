@@ -3,6 +3,7 @@ package robotvacuum.collision;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import robotvacuum.robot.ActualMovement;
+import robotvacuum.robot.Movement;
 import robotvacuum.robot.MovementLineSegment;
 import robotvacuum.robot.ProposedMovement;
 
@@ -21,19 +22,19 @@ class CollisionDetectorDynamicTest {
     void detectDynamicCollisionBetweenCircleAndRectangleLineMovement() {
         CollisionTestData robotTestData = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
         CollisionTestData wallTestData = generateMockCollisionRectangleTestData(4.0, 1.0, 2.0, 2.0);
-        final ProposedMovement<MovementLineSegment> proposedMovement =
-                new ProposedMovement<>(new MovementLineSegment(robotTestData.getPos(), new Position(5.0, 1.0)));
+        final ProposedMovement proposedMovement =
+                new ProposedMovement(new MovementLineSegment(robotTestData.getPos(), new Position(5.0, 1.0)));
 
-        ActualMovement<MovementLineSegment> actualMovement =
+        ActualMovement actualMovement =
                 collisionDetector.detectDynamicCollision(robotTestData, wallTestData, proposedMovement);
 
         assertFalse(actualMovement.getCollisions().isEmpty());
-        Optional<MovementLineSegment> optMovement = actualMovement.getMovement();
+        Optional<Movement> optMovement = actualMovement.getMovement();
         assertTrue(optMovement.isPresent());
         Optional<Collision> optCollision = actualMovement.getCollisions().stream().findFirst();
         assertTrue(optCollision.isPresent());
 
-        MovementLineSegment movement = optMovement.orElseThrow();
+        Movement movement = optMovement.orElseThrow();
         Collision collision = optCollision.orElseThrow();
         assertEquals(2.0, movement.getStopPos().getX(), 0.00001);
         assertEquals(1.0, movement.getStopPos().getY(), 0.00001);

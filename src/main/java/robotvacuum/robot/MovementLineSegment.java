@@ -2,7 +2,7 @@ package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
 
-public class MovementLineSegment implements Movement<MovementLineSegment> {
+public class MovementLineSegment implements Movement {
 
     private final Position startPos;
     private final Position stopPos;
@@ -53,7 +53,8 @@ public class MovementLineSegment implements Movement<MovementLineSegment> {
         return startPos.distanceTo(stopPos);
     }
 
-    public double getDirection() {
+    @Override
+    public double getFinalFacingDirection() {
         return startPos.directionTo(stopPos);
     }
 

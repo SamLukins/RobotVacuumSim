@@ -2,20 +2,22 @@ package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
 
-public class MovementArc implements Movement<MovementArc> {
+public class MovementArc implements Movement {
 
     private final Position startPos;
     private final Position arcCenter;
     private final double arcDistance;
+    private final CircleDirection circleDirection;
 
-    public MovementArc(Position startPos, Position arcCenter, double arcDistance) {
+    public MovementArc(Position startPos, Position arcCenter, double arcDistance, CircleDirection direction) {
         this.startPos = startPos;
         this.arcCenter = arcCenter;
         this.arcDistance = arcDistance;
+        this.circleDirection = direction;
     }
 
     @Override
-    public Position linearInterpolatedPosition(double percent) throws Exception {
+    public Position linearInterpolatedPosition(double percent) {
         //if negative or more than 100% throw exception
         if (percent < 0) {
             throw new IllegalArgumentException("percent cannot be less than 0");
@@ -51,7 +53,7 @@ public class MovementArc implements Movement<MovementArc> {
     /**
      * @param distance distance of the original movement that the new movement will cover in meters
      * @return A new movement (or subclass) object that covers distance amount of the original movement
-     * @throws Exception if the distance is less than 0 or greater than the total distance
+     * @throws IllegalArgumentException if the distance is less than 0 or greater than the total distance
      */
     @Override
     public MovementArc partialFixedDistanceMovement(double distance) {
@@ -60,7 +62,7 @@ public class MovementArc implements Movement<MovementArc> {
         } else if (distance > arcDistance) {
             throw new IllegalArgumentException("distance cannot be greater than the arcDistance");
         } else {
-            return new MovementArc(startPos, arcCenter, distance);
+            return new MovementArc(startPos, arcCenter, distance, circleDirection);
         }
     }
 
@@ -106,6 +108,10 @@ public class MovementArc implements Movement<MovementArc> {
      */
     public double getArcDistance() {
         return arcDistance;
+    }
+
+    public double getFinalFacingDirection() {
+        return this.arcCenter.directionTo(this.getStopPos());
     }
 
 }

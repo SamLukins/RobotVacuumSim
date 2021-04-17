@@ -21,7 +21,7 @@ public class RobotSimulationState {
         this.position.offsetPositionCartesian(mov.getStopPos());
     }
 
-    public <T extends Movement<T>> void updatePosition(ActualMovement<T> mov) {
+    public void updatePosition(ActualMovement mov) {
         mov.getMovement().ifPresent(this::updatePosition);
     }
 
