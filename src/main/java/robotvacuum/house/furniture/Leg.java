@@ -1,10 +1,10 @@
 package robotvacuum.house.furniture;
 
 import robotvacuum.collision.CollisionShape;
-
 import java.io.Serializable;
 
 /**
+ *
  * @author SamL
  */
 public class Leg implements Serializable {
