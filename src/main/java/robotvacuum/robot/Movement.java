@@ -11,16 +11,16 @@ public interface Movement {
     /**
      * @param percent the percent along the movement
      * @return the position that is percent along the movement from the start
-     * @throws RuntimeException if the percent is less than 0 or greater than 1
+     * @throws IllegalArgumentException if the percent is less than 0 or greater than 1
      */
-    Position linearInterpolatedPosition(double percent) throws Exception;
+    Position linearInterpolatedPosition(double percent);
 
     /**
      * @param distance distance from start position along movement in meters
      * @return the position distance from the start along the path
-     * @throws RuntimeException if the distance is greater than the total movement distance
+     * @throws IllegalArgumentException if the distance is greater than the total movement distance
      */
-    Position fixedDistancePosition(double distance) throws Exception;
+    Position fixedDistancePosition(double distance);
 
     /**
      * @param percent percent of the original movement that the new movement will cover

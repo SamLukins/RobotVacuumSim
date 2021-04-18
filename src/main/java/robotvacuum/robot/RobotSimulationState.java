@@ -18,7 +18,10 @@ public class RobotSimulationState {
     }
 
     public void updatePosition(Movement mov) {
-        this.position.offsetPositionCartesian(mov.getStopPos());
+        if (!mov.getStartPos().equals(this.position)) {
+            throw new IllegalArgumentException("movement does not start at current robot position");
+        }
+        this.position = mov.getStopPos();
     }
 
     public void updatePosition(ActualMovement mov) {

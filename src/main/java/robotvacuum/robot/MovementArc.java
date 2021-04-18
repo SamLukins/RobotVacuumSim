@@ -1,6 +1,7 @@
 package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
+import robotvacuum.utility.MathHelper;
 
 public class MovementArc implements Movement {
 
@@ -8,12 +9,18 @@ public class MovementArc implements Movement {
     private final Position arcCenter;
     private final double arcDistance;
     private final CircleDirection circleDirection;
+    private final MathHelper mathHelper;
 
-    public MovementArc(Position startPos, Position arcCenter, double arcDistance, CircleDirection direction) {
+    public MovementArc(Position startPos, Position arcCenter, double arcDistance, CircleDirection direction, MathHelper mathHelper) {
         this.startPos = startPos;
         this.arcCenter = arcCenter;
         this.arcDistance = arcDistance;
         this.circleDirection = direction;
+        this.mathHelper = mathHelper;
+    }
+
+    public MovementArc(Position startPos, Position arcCenter, double arcDistance, CircleDirection direction) {
+        this(startPos, arcCenter, arcDistance, direction, new MathHelper());
     }
 
     @Override
@@ -85,7 +92,13 @@ public class MovementArc implements Movement {
         double startingAngle = arcCenter.directionTo(startPos);
         double angle = arcDistance / radius;
 
-        double finalAngle = startingAngle + angle;
+        double finalAngle;
+        if (this.circleDirection == CircleDirection.CLOCKWISE) {
+            finalAngle = startingAngle + angle;
+        } else {
+            finalAngle = startingAngle - angle;
+        }
+        finalAngle %= Math.PI;
         return arcCenter.offsetPositionPolar(finalAngle, radius);
     }
 
@@ -111,7 +124,11 @@ public class MovementArc implements Movement {
     }
 
     public double getFinalFacingDirection() {
-        return this.arcCenter.directionTo(this.getStopPos());
+        if (this.circleDirection == CircleDirection.CLOCKWISE) {
+            return mathHelper.normalizeAngle(this.arcCenter.directionTo(this.getStopPos()) + (Math.PI/2));
+        } else {
+            return mathHelper.normalizeAngle(this.arcCenter.directionTo(this.getStopPos()) - (Math.PI/2));
+        }
     }
 
 }
