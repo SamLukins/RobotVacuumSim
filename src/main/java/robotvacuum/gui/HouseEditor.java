@@ -4,7 +4,6 @@ import robotvacuum.house.*;
 import robotvacuum.collision.*;
 import robotvacuum.simulation.*;
 
-import javax.swing.*;
 import java.io.IOException;
 
 /**
@@ -16,6 +15,8 @@ public class HouseEditor extends javax.swing.JFrame {
     HouseManager h;
     Simulator s;
     HouseGUI gui;
+    boolean moveVacuum, notStartedYet;
+    Thread t1;
     
     /**
      * Creates new form HouseEditor
@@ -24,6 +25,29 @@ public class HouseEditor extends javax.swing.JFrame {
         initComponents();
         h = new HouseManager();
         gui = new HouseGUI();
+        moveVacuum = true;
+        notStartedYet = true;
+        t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    while(moveVacuum) {
+                        s.movement();
+                        gui.redoWithVacuum(h.getWalls(), h.getChests(), h.getTableLegs(), s.getVacuumShape());
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            System.err.println(e.getMessage());
+                        }
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        System.err.println(e.getMessage());
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -50,8 +74,8 @@ public class HouseEditor extends javax.swing.JFrame {
         deleteChestButton = new javax.swing.JButton();
         outputText = new javax.swing.JLabel();
         createVacuumButton = new javax.swing.JButton();
-        moveVacuumButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        startVacuumButton = new javax.swing.JButton();
+        stopVacuumButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("House Editor");
@@ -205,15 +229,21 @@ public class HouseEditor extends javax.swing.JFrame {
             }
         });
 
-        moveVacuumButton.setText("Move vacuum");
-        moveVacuumButton.setEnabled(false);
-        moveVacuumButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        startVacuumButton.setText("Start vacuum");
+        startVacuumButton.setEnabled(false);
+        startVacuumButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                moveVacuumButtonMouseClicked(evt);
+                startVacuumButtonMouseClicked(evt);
             }
         });
 
-        jLabel1.setText("(temporary)");
+        stopVacuumButton.setText("Stop vacuum");
+        stopVacuumButton.setEnabled(false);
+        stopVacuumButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                stopVacuumButtonMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -222,19 +252,17 @@ public class HouseEditor extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(createVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(moveVacuumButton))
-                            .addComponent(outputText)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(151, 151, 151)
-                        .addComponent(jLabel1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(createVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(startVacuumButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(stopVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(outputText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,10 +273,9 @@ public class HouseEditor extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(createVacuumButton)
-                    .addComponent(moveVacuumButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(startVacuumButton)
+                    .addComponent(stopVacuumButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                 .addComponent(outputText, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -318,7 +345,7 @@ public class HouseEditor extends javax.swing.JFrame {
                     h.getSerializer().serializeHouse(h.getHouse(), saveHouseField.getText());
                     outputText.setText(saveHouseField.getText() + " saved to file.");
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    System.err.println(e.getMessage());
                 }
             }
         }
@@ -396,11 +423,19 @@ public class HouseEditor extends javax.swing.JFrame {
                     }
                 }
                 h.getHouse().addRoom(c.x, c.y, c.width, c.height);
+                //absolute
+//                switch (c.doorPositionCode) {
+//                    case 1: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x, c.y), c.doorWidth); break;   //left wall
+//                    case 2: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x + House.WALL_THICKNESS, c.y), c.doorWidth); break;    //top wall
+//                    case 3: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x + c.width - House.WALL_THICKNESS, c.y + House.WALL_THICKNESS), c.doorWidth); break; //right wall
+//                    case 4: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x, c.y + c.height - House.WALL_THICKNESS), c.doorWidth); break;   //bottom wall
+//                }
+                //relative
                 switch (c.doorPositionCode) {
-                    case 1: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x, c.y), c.doorWidth); break;   //left wall
-                    case 2: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x + House.WALL_THICKNESS, c.y), c.doorWidth); break;    //top wall
-                    case 3: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x + c.width - House.WALL_THICKNESS, c.y + House.WALL_THICKNESS), c.doorWidth); break; //right wall
-                    case 4: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.x, c.y + c.height - House.WALL_THICKNESS), c.doorWidth); break;   //bottom wall
+                    case 1: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(0, 0), c.doorWidth); break;   //left wall
+                    case 2: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(House.WALL_THICKNESS, 0), c.doorWidth); break;    //top wall
+                    case 3: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(c.width - House.WALL_THICKNESS, House.WALL_THICKNESS), c.doorWidth); break; //right wall
+                    case 4: h.getHouse().getRoom(new Position(c.x, c.y)).addDoor(new Position(0, c.height - House.WALL_THICKNESS), c.doorWidth); break;   //bottom wall
                 }
                 gui.redo(h.getWalls(), h.getChests(), h.getTableLegs());
                 outputText.setText("Room added.");
@@ -409,27 +444,54 @@ public class HouseEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_addRoomButtonMouseClicked
 
     private void createVacuumButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createVacuumButtonMouseClicked
-        //TODO: pop up JDialog to take user input for vacuum settings
         if (createVacuumButton.isEnabled()) {
-            s = new Simulator(h.getHouse());
-            moveVacuumButton.setEnabled(true);
-            gui.redoWithVacuum(h.getWalls(), h.getChests(), h.getTableLegs(), s.getVacuum());
-            outputText.setText("Vacuum created.");
+            CreateNewVacuum c = new CreateNewVacuum(this, true);
+            c.setVisible(true);
+            if (c.create) {
+                s = new Simulator(h.getHouse(), new Position(c.x, c.y), c.batteryLife, c.vacuumEfficiency, c.whiskerEfficiency, c.vacuumSpeed, c.algorithmCode);
+                startVacuumButton.setEnabled(true);
+                newHouseButton.setEnabled(false);
+                loadHouseButton.setEnabled(false);
+                saveHouseButton.setEnabled(false);
+                addRoomButton.setEnabled(false);
+                deleteRoomButton.setEnabled(false);
+                addChestButton.setEnabled(false);
+                deleteChestButton.setEnabled(false);
+                addTableButton.setEnabled(false);
+                deleteTableButton.setEnabled(false);
+                createVacuumButton.setEnabled(false);
+                gui.redoWithVacuum(h.getWalls(), h.getChests(), h.getTableLegs(), s.getVacuumShape());
+                outputText.setText("Vacuum created.");
+            }
         }
     }//GEN-LAST:event_createVacuumButtonMouseClicked
 
-    private void moveVacuumButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_moveVacuumButtonMouseClicked
-        if (moveVacuumButton.isEnabled()) {
-            s.singleMovement();
-            gui.redoWithVacuum(h.getWalls(), h.getChests(), h.getTableLegs(), s.getVacuum());
-            outputText.setText("Vacuum moved.");
+    private void startVacuumButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startVacuumButtonMouseClicked
+        if (startVacuumButton.isEnabled()) {
+            startVacuumButton.setEnabled(false);
+            stopVacuumButton.setEnabled(true);
+            outputText.setText("Vacuum started.");
+            moveVacuum = true;
+            if (notStartedYet == true) {
+                t1.start();
+                notStartedYet = false;
+            }
         }
-    }//GEN-LAST:event_moveVacuumButtonMouseClicked
+    }//GEN-LAST:event_startVacuumButtonMouseClicked
+
+    private void stopVacuumButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopVacuumButtonMouseClicked
+        if (stopVacuumButton.isEnabled()) {
+            stopVacuumButton.setEnabled(false);
+            startVacuumButton.setEnabled(true);
+            moveVacuum = false;
+            outputText.setText("Vacuum stopped.");
+        }
+    }//GEN-LAST:event_stopVacuumButtonMouseClicked
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -442,13 +504,23 @@ public class HouseEditor extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(HouseEditor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(HouseEditor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(HouseEditor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(HouseEditor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new HouseEditor().setVisible(true));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new HouseEditor().setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -459,15 +531,15 @@ public class HouseEditor extends javax.swing.JFrame {
     private javax.swing.JButton deleteChestButton;
     private javax.swing.JButton deleteRoomButton;
     private javax.swing.JButton deleteTableButton;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton loadHouseButton;
     private javax.swing.JTextField loadHouseField;
-    private javax.swing.JButton moveVacuumButton;
     private javax.swing.JButton newHouseButton;
     private javax.swing.JLabel outputText;
     private javax.swing.JButton saveHouseButton;
     private javax.swing.JTextField saveHouseField;
+    private javax.swing.JButton startVacuumButton;
+    private javax.swing.JButton stopVacuumButton;
     // End of variables declaration//GEN-END:variables
 }

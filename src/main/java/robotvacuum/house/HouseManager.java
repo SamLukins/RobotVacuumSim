@@ -50,13 +50,24 @@ public class HouseManager {
         List<Rectangle> walls = new ArrayList<>();
         Map<Position, Room> rooms = h.getRooms();
         double tempX, tempY, tempWidth, tempHeight;
-        
-        for (Room r : rooms.values()) {
-            for (Position p : r.getWalls().keySet()) {
-                tempX = p.getX() * SCALE_FACTOR;
-                tempY = p.getY() * SCALE_FACTOR;
-                tempWidth = r.getWalls().get(p).getcRect().getWidth() * SCALE_FACTOR;
-                tempHeight = r.getWalls().get(p).getcRect().getHeight() * SCALE_FACTOR;
+        //absolute position
+//        for (Room r : rooms.values()) {
+//            for (Position p : r.getWalls().keySet()) {
+//                tempX = p.getX() * SCALE_FACTOR;
+//                tempY = p.getY() * SCALE_FACTOR;
+//                tempWidth = r.getWalls().get(p).getcRect().getWidth() * SCALE_FACTOR;
+//                tempHeight = r.getWalls().get(p).getcRect().getHeight() * SCALE_FACTOR;
+//                walls.add(new Rectangle((int)tempX, (int)tempY, (int)tempWidth, (int)tempHeight));
+//            }
+//        }
+        //relative position
+        for (Position p1 : rooms.keySet()) {
+            Room r = rooms.get(p1);
+            for (Position p2 : r.getWalls().keySet()) {
+                tempX = (p1.getX() + p2.getX()) * SCALE_FACTOR;
+                tempY = (p1.getY() + p2.getY()) * SCALE_FACTOR;
+                tempWidth = r.getWalls().get(p2).getcRect().getWidth() * SCALE_FACTOR;
+                tempHeight = r.getWalls().get(p2).getcRect().getHeight() * SCALE_FACTOR;
                 walls.add(new Rectangle((int)tempX, (int)tempY, (int)tempWidth, (int)tempHeight));
             }
         }

@@ -64,10 +64,10 @@ public class House implements Serializable {
         */
         //Walls not occupying same space
         Room newRoom = new Room(
-                Map.of(new Position(BASE_ROOM_X, BASE_ROOM_Y), new Wall(/*new Position(BASE_ROOM_X, BASE_ROOM_Y),*/ new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight - BASE_WALL_THICKNESS))),  //left wall
-                        new Position((BASE_ROOM_X + BASE_WALL_THICKNESS), BASE_ROOM_Y), new Wall(/*new Position((BASE_ROOM_X + BASE_WALL_THICKNESS), BASE_ROOM_Y),*/ new CollisionRectangle((baseRoomWidth - BASE_WALL_THICKNESS), BASE_WALL_THICKNESS)),   //top wall
-                        new Position((BASE_ROOM_X + baseRoomWidth - BASE_WALL_THICKNESS), (BASE_ROOM_Y + BASE_WALL_THICKNESS)), new Wall(/*new Position((BASE_ROOM_X + baseRoomWidth - BASE_WALL_THICKNESS), (BASE_ROOM_Y + BASE_WALL_THICKNESS)),*/ new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight - BASE_WALL_THICKNESS))),    //right wall
-                        new Position(BASE_ROOM_X, (BASE_ROOM_Y + baseRoomHeight - BASE_WALL_THICKNESS)), new Wall(/*new Position(BASE_ROOM_X, (BASE_ROOM_Y + baseRoomHeight - BASE_WALL_THICKNESS)),*/ new CollisionRectangle((baseRoomWidth - BASE_WALL_THICKNESS), BASE_WALL_THICKNESS))));  //bottom wall
+                Map.of(new Position(BASE_ROOM_X, BASE_ROOM_Y), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight - BASE_WALL_THICKNESS))),  //left wall
+                        new Position((BASE_ROOM_X + BASE_WALL_THICKNESS), BASE_ROOM_Y), new Wall(new CollisionRectangle((baseRoomWidth - BASE_WALL_THICKNESS), BASE_WALL_THICKNESS)),   //top wall
+                        new Position((BASE_ROOM_X + baseRoomWidth - BASE_WALL_THICKNESS), (BASE_ROOM_Y + BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle(BASE_WALL_THICKNESS, (baseRoomHeight - BASE_WALL_THICKNESS))),    //right wall
+                        new Position(BASE_ROOM_X, (BASE_ROOM_Y + baseRoomHeight - BASE_WALL_THICKNESS)), new Wall(new CollisionRectangle((baseRoomWidth - BASE_WALL_THICKNESS), BASE_WALL_THICKNESS))));  //bottom wall
         newRoom.setIsBaseRoom(true);
         rooms.put(new Position(BASE_ROOM_X, BASE_ROOM_Y), newRoom);
         houseWidth = baseRoomWidth;
@@ -95,14 +95,18 @@ public class House implements Serializable {
         wallMap.put(new Position((originPointX + roomWidth - WALL_THICKNESS), originPointY), new Wall(new Position((originPointX + roomWidth - WALL_THICKNESS), originPointY), new CollisionRectangle(WALL_THICKNESS, roomHeight)));   //right wall
         wallMap.put(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new CollisionRectangle(roomWidth, WALL_THICKNESS)));  //bottom wall
         */
-        //Walls not occupying same space
-        wallMap.put(new Position(originPointX, originPointY), new Wall(/*new Position(originPointX, originPointY),*/ new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));     //left wall
-        wallMap.put(new Position((originPointX + WALL_THICKNESS), originPointY), new Wall(/*new Position((originPointX + WALL_THICKNESS), originPointY),*/ new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));   //top wall
-        wallMap.put(new Position((originPointX + roomWidth - WALL_THICKNESS), (originPointY + WALL_THICKNESS)), new Wall(/*new Position((originPointX + roomWidth - WALL_THICKNESS), (originPointY + WALL_THICKNESS)),*/ new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));   //right wall
-        wallMap.put(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(/*new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)),*/ new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));  //bottom wall
+        //Walls not occupying same space, absolute value
+//        wallMap.put(new Position(originPointX, originPointY), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));     //left wall
+//        wallMap.put(new Position((originPointX + WALL_THICKNESS), originPointY), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));   //top wall
+//        wallMap.put(new Position((originPointX + roomWidth - WALL_THICKNESS), (originPointY + WALL_THICKNESS)), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));   //right wall
+//        wallMap.put(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));  //bottom wall
+        //Walls not occupying same space, relative value
+        wallMap.put(new Position(0, 0), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));     //left wall
+        wallMap.put(new Position((WALL_THICKNESS), 0), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));   //top wall
+        wallMap.put(new Position((roomWidth - WALL_THICKNESS), WALL_THICKNESS), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));   //right wall
+        wallMap.put(new Position(0, (roomHeight - WALL_THICKNESS)), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));  //bottom wall
         
-        //TODO: add door to one wall
-        Room newRoom = new Room(wallMap);  
+        Room newRoom = new Room(wallMap);
         //check eligibility
         if (roomWidth * roomHeight < MIN_ROOM_SIZE) {
             System.out.println("Invalid size: room cannot be smaller than 4 sq ft.");

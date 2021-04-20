@@ -1,6 +1,16 @@
 package robotvacuum;
 
+//import java.awt.Rectangle;
+//import java.util.Collections;
+//import java.util.Map;
+//import java.util.Set;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+//import robotvacuum.collision.*;
 import robotvacuum.gui.*;
+//import robotvacuum.house.*;
+//import robotvacuum.robot.*;
+//import robotvacuum.simulation.*;
 
 /**
  *

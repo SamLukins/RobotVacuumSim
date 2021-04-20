@@ -151,6 +151,7 @@ public class HouseGUI extends Frame {
         }
         
         //vacuum
+        g.setColor(Color.DARK_GRAY);
         if (vacuum != null) {
             g.fillOval((vacuum.x*BLOCK_SIZE)+MIN_X, (vacuum.y*BLOCK_SIZE)+MIN_Y, vacuum.width*BLOCK_SIZE, vacuum.height*BLOCK_SIZE);
         }
