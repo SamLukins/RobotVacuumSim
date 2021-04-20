@@ -2,13 +2,11 @@ package robotvacuum.collision;
 
 import robotvacuum.house.House;
 import robotvacuum.robot.ActualMovement;
-import robotvacuum.robot.Movement;
 import robotvacuum.robot.ProposedMovement;
 import robotvacuum.robot.RobotVacuum;
 import robotvacuum.robot.VacuumStrategy;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -164,52 +162,45 @@ public class CollisionDetector {
     }
 
     public ActualMovement detectDynamicCollision(CollisionTestData ctd1, Set<CollisionTestData> ctds, ProposedMovement proposedMovement) {
-        try {
-            //if continue colliding
-            Set<Collision> startCollisions = detectStaticCollision(ctd1, ctds);
-            if (!startCollisions.isEmpty()) {
-                Position collisionTestPosition = proposedMovement.getMov().fixedDistancePosition(Math.min(0.005, proposedMovement.getMov().totalTravelDistance()));
-                Set<Collision> movementCollisions = detectStaticCollision(new CollisionTestData(collisionTestPosition, ctd1.getcShape()), ctds);
+        //if continue colliding
+        Set<Collision> startCollisions = detectStaticCollision(ctd1, ctds);
+        if (!startCollisions.isEmpty()) {
+            Position collisionTestPosition = proposedMovement.getMov().fixedDistancePosition(Math.min(0.005, proposedMovement.getMov().totalTravelDistance()));
+            Set<Collision> movementCollisions = detectStaticCollision(new CollisionTestData(collisionTestPosition, ctd1.getcShape()), ctds);
 
 
-                //if movement would continue collision
-                if (!movementCollisions.isEmpty()) {
-                    //already colliding and movement continues colliding
-                    return new ActualMovement(proposedMovement, Optional.empty(), startCollisions);
-                }
+            //if movement would continue collision
+            if (!movementCollisions.isEmpty()) {
+                //already colliding and movement continues colliding
+                return new ActualMovement(proposedMovement, Optional.empty(), startCollisions);
             }
+        }
 
-            //check every centimeter for a collision
-            double initialCheckResolution = 0.01;
-            for (double travelDistance = 0; travelDistance <= proposedMovement.getMov().totalTravelDistance(); travelDistance += initialCheckResolution) {
-                Set<Collision> testCollisions = detectStaticCollision(
-                        new CollisionTestData(proposedMovement.getMov().fixedDistancePosition(travelDistance), ctd1.getcShape()),
-                        ctds);
+        //check every centimeter for a collision
+        double initialCheckResolution = 0.01;
+        for (double travelDistance = initialCheckResolution;
+             travelDistance <= proposedMovement.getMov().totalTravelDistance();
+             travelDistance += initialCheckResolution) {
+            Set<Collision> testCollisions = detectStaticCollision(
+                    new CollisionTestData(proposedMovement.getMov().fixedDistancePosition(travelDistance), ctd1.getcShape()),
+                    ctds);
 
-                //if there is a collision
-                if (!testCollisions.isEmpty()) {
-                    //get a more accurate collision
-                    //millimeter resolution
-                    double resolution = 0.001;
+            //if there is a collision
+            if (!testCollisions.isEmpty()) {
+                //get a more accurate collision
+                //millimeter resolution
+                double resolution = 0.001;
 
-                    binarySearchDynamicCollision(
-                            ctd1, ctds, proposedMovement, travelDistance - initialCheckResolution, travelDistance, new HashSet<>(), resolution
-                    );
+                MovementCollisions finalCollision = binarySearchDynamicCollision(
+                        ctd1, ctds, proposedMovement, travelDistance - initialCheckResolution, travelDistance,
+                        testCollisions, resolution);
 
-                    MovementCollisions finalCollision = binarySearchDynamicCollision(
-                            ctd1, ctds, proposedMovement, travelDistance - initialCheckResolution, travelDistance,
-                            testCollisions, resolution);
-
-                    //create and return the actual resulting movement to the collision
-                    return new ActualMovement(
-                            proposedMovement,
-                            Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getCollisionDistance())),
-                            finalCollision.getCollisions());
-                }
+                //create and return the actual resulting movement to the collision
+                return new ActualMovement(
+                        proposedMovement,
+                        Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getCollisionDistance())),
+                        finalCollision.getCollisions());
             }
-        } catch (Exception e) {
-            System.err.println("Something has gone horribly wrong.");
-            e.printStackTrace();
         }
 
         //no collision detected, so the actual movement is the entire proposed movement
