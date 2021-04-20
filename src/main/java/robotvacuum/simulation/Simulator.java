@@ -55,7 +55,7 @@ public class Simulator {
     public void singleMovement() {
         ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), previousCollisions);
         ActualMovement actualMovement = cd.detectDynamicCollision(rv, h, proposedVacuumMovement);
-        previousCollisions.addAll(actualMovement.getCollisions());
+        previousCollisions = actualMovement.getCollisions();
         rv.getrSimState().updatePosition(actualMovement);
     }
     

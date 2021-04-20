@@ -15,7 +15,7 @@ public class MovementLineSegment implements Movement {
     @Override
     public Position linearInterpolatedPosition(double percent) {
         if (!(0 <= percent && percent <= 1)) {
-            throw new IllegalArgumentException("Percent out of bounds");
+            throw new IllegalArgumentException("Percent out of bounds. Value: " + percent);
         }
         return startPos.linearInterpolateTo(stopPos, percent);
     }

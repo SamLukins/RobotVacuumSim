@@ -2,6 +2,7 @@ package robotvacuum.robot;
 
 
 import robotvacuum.collision.Collision;
+import robotvacuum.utility.MathHelper;
 
 import java.util.Collection;
 import java.util.Random;
@@ -11,10 +12,12 @@ public class RandomVacuumStrategy implements VacuumStrategy {
     private final double defaultVacuumDistance;
     private double previousDirection = 0.0;
     private Random random;
+    private final MathHelper mathHelper;
 
     public RandomVacuumStrategy(long seed, double defaultVacuumDistance) {
         this.defaultVacuumDistance = defaultVacuumDistance;
         this.random = new Random(seed);
+        this.mathHelper = new MathHelper();
     }
 
     public RandomVacuumStrategy(long seed, double defaultVacuumDistance, double startingDirection) {
@@ -37,7 +40,9 @@ public class RandomVacuumStrategy implements VacuumStrategy {
                     previousCollisions.stream().mapToDouble(Collision::getCollisionDirection).map(x -> x - Math.PI / 2).min().getAsDouble()
                             + 2 * Math.PI;
 
-            double direction = ((random.nextDouble() * (maxPossibleDirection - minPossibleDirection)) + minPossibleDirection) % (2 * Math.PI);
+            double direction = mathHelper.normalizeAngle((random.nextDouble() * (maxPossibleDirection - minPossibleDirection)) + minPossibleDirection);
+
+            this.previousDirection = direction;
 
             return new ProposedMovement(
                     new MovementLineSegment(
