@@ -5,11 +5,11 @@ import java.io.Serializable;
 /**
  * @author SamL
  */
-public class CollisionTestData implements Serializable {
+public class CollisionTestData<S extends CollisionShape> implements Serializable {
     private final Position pos;
-    private final CollisionShape cShape;
+    private final S cShape;
 
-    public CollisionTestData(Position pos, CollisionShape cShape) {
+    public CollisionTestData(Position pos, S cShape) {
         this.pos = pos;
         this.cShape = cShape;
     }
@@ -24,7 +24,7 @@ public class CollisionTestData implements Serializable {
     /**
      * @return the cShape
      */
-    public CollisionShape getcShape() {
+    public S getcShape() {
         return cShape;
     }
 

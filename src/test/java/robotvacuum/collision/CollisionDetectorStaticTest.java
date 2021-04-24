@@ -16,8 +16,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenRectanglesNoCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(5.0, 5.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(5.0, 5.0, 1.0, 1.0);
 
         Optional<Collision> collision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
@@ -26,8 +26,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenRectanglesNoCollisionXOverlap() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 5.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(1.0, 5.0, 1.0, 1.0);
 
         Optional<Collision> collision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
@@ -36,8 +36,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenRectanglesNoCollisionYOverlap() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(5.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(5.0, 1.0, 1.0, 1.0);
 
         Optional<Collision> collision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
@@ -46,47 +46,34 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenRectanglesLeftCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(2.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(1.0, 0.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 1.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
-        assertEquals(new Position(1.5, 1.0), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(new Position(1.0, 0.5), collision.getCollisionPosition(), "collision position is not correct");
         assertEquals(Math.PI, collision.getCollisionDirection(), "collision direction is not correct");
     }
 
     @Test
     void detectStaticCollisionBetweenRectanglesRightCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(2.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(1.0, 0.0, 1.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
-        assertEquals(new Position(1.5, 1.0), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(new Position(1.0, 0.5), collision.getCollisionPosition(), "collision position is not correct");
         assertEquals(0, collision.getCollisionDirection(), 0.000001, "collision direction is not correct");
     }
 
     @Test
     void detectStaticCollisionBetweenRectanglesTopCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 2.0, 1.0, 1.0);
-
-        Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
-
-        assertTrue(optCollision.isPresent(), "There should be a collision");
-        Collision collision = optCollision.get();
-        assertEquals(new Position(1.0, 1.5), collision.getCollisionPosition(), "collision position is not correct");
-        assertEquals(Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
-    }
-
-    @Test
-    void detectStaticCollisionBetweenRectanglesBottomCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 2.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(0.0, 1.0, 2.0, 2.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
@@ -97,22 +84,35 @@ class CollisionDetectorStaticTest {
     }
 
     @Test
-    void detectStaticCollisionBetweenRectanglesCornerCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(2.0, 2.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+    void detectStaticCollisionBetweenRectanglesBottomCollision() {
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 2.0, 2.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 1.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
-        assertEquals(new Position(1.5, 1.5), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(new Position(1.0, 1.5), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
+    }
+
+    @Test
+    void detectStaticCollisionBetweenRectanglesCornerCollision() {
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(2.0, 2.0, 2.0, 2.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 2.0, 2.0);
+
+        Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
+
+        assertTrue(optCollision.isPresent(), "There should be a collision");
+        Collision collision = optCollision.get();
+        assertEquals(new Position(2.5, 2.5), collision.getCollisionPosition(), "collision position is not correct");
         assertEquals(-3 * Math.PI / 4, collision.getCollisionDirection(), "collision direction is not correct");
     }
 
     @Test
     void detectStaticCollisionBetweenRectanglesCompleteOverlap() {
-        CollisionTestData ctd1Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd1Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 2.0, 2.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenRectangles(ctd1Mock, ctd2Mock);
 
@@ -124,8 +124,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCirclesNoCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionCircleTestData(5.0, 5.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd2Mock = generateMockCollisionCircleTestData(5.0, 5.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircles(ctd1Mock, ctd2Mock);
 
@@ -134,8 +134,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCirclesLeftCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(3.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(3.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd2Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircles(ctd1Mock, ctd2Mock);
 
@@ -147,8 +147,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCirclesRightCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionCircleTestData(3.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd2Mock = generateMockCollisionCircleTestData(3.0, 1.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircles(ctd1Mock, ctd2Mock);
 
@@ -160,8 +160,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCirclesTopCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionCircleTestData(1.0, 3.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd2Mock = generateMockCollisionCircleTestData(1.0, 3.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircles(ctd1Mock, ctd2Mock);
 
@@ -173,8 +173,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCirclesBottomCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 3.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 3.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd2Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircles(ctd1Mock, ctd2Mock);
 
@@ -187,8 +187,8 @@ class CollisionDetectorStaticTest {
     @Test
     void detectStaticCollisionBetweenCirclesDiagonalCollision() {
 
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionCircleTestData(1.0 + root2, 1.0 + root2, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd2Mock = generateMockCollisionCircleTestData(1.0 + root2, 1.0 + root2, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircles(ctd1Mock, ctd2Mock);
 
@@ -200,8 +200,8 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCircleAndRectangleNoCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(5.0, 5.0, 1.0, 1.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(5.0, 5.0, 1.0, 1.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircleAndRectangle(ctd1Mock, ctd2Mock);
 
@@ -210,21 +210,21 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCircleAndRectangleLeftCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(3.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 2.0, 2.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(2.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircleAndRectangle(ctd1Mock, ctd2Mock);
 
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
-        assertEquals(new Position(2.0, 1.0), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(new Position(1.5, 1.0), collision.getCollisionPosition(), "collision position is not correct");
         assertEquals(Math.PI, collision.getCollisionDirection(), Math.ulp(-Math.PI), "collision direction is not correct");
     }
 
     @Test
     void detectStaticCollisionBetweenCircleAndRectangleRightCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(3.0, 1.0, 2.0, 2.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(2.0, 0.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircleAndRectangle(ctd1Mock, ctd2Mock);
 
@@ -236,48 +236,48 @@ class CollisionDetectorStaticTest {
 
     @Test
     void detectStaticCollisionBetweenCircleAndRectangleTopCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 3.0, 2.0, 2.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 2.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 0.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircleAndRectangle(ctd1Mock, ctd2Mock);
 
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
-        assertEquals(new Position(1.0, 2.0), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(new Position(1.0, 1.5), collision.getCollisionPosition(), "collision position is not correct");
         assertEquals(-Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
     }
 
     @Test
     void detectStaticCollisionBetweenCircleAndRectangleBottomCollision() {
-        CollisionTestData ctd1Mock = generateMockCollisionCircleTestData(1.0, 3.0, 1.0);
-        CollisionTestData ctd2Mock = generateMockCollisionRectangleTestData(1.0, 1.0, 2.0, 2.0);
+        CollisionTestData<CollisionCircle> ctd1Mock = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> ctd2Mock = generateMockCollisionRectangleTestData(0.0, 1.0, 2.0, 2.0);
 
         Optional<Collision> optCollision = collisionDetector.detectStaticCollisionBetweenCircleAndRectangle(ctd1Mock, ctd2Mock);
 
         assertTrue(optCollision.isPresent(), "There should be a collision");
         Collision collision = optCollision.get();
-        assertEquals(new Position(1.0, 2.0), collision.getCollisionPosition(), "collision position is not correct");
+        assertEquals(new Position(1.0, 1.5), collision.getCollisionPosition(), "collision position is not correct");
         assertEquals(Math.PI / 2, collision.getCollisionDirection(), "collision direction is not correct");
     }
 
-    private CollisionTestData generateMockCollisionRectangleTestData(double x, double y, double width, double height) {
+    private CollisionTestData<CollisionRectangle> generateMockCollisionRectangleTestData(double x, double y, double width, double height) {
         CollisionRectangle rectMock = Mockito.mock(CollisionRectangle.class);
         when(rectMock.getHeight()).thenReturn(height);
         when(rectMock.getWidth()).thenReturn(width);
         when(rectMock.getShape()).thenReturn(Shape.RECTANGLE);
         Position pos = new Position(x, y);
-        CollisionTestData ctdMock = Mockito.mock(CollisionTestData.class);
+        CollisionTestData<CollisionRectangle> ctdMock = Mockito.mock(CollisionTestData.class);
         when(ctdMock.getcShape()).thenReturn(rectMock);
         when(ctdMock.getPos()).thenReturn(pos);
         return ctdMock;
     }
 
-    private CollisionTestData generateMockCollisionCircleTestData(double x, double y, double radius) {
+    private CollisionTestData<CollisionCircle> generateMockCollisionCircleTestData(double x, double y, double radius) {
         CollisionCircle circleMock = Mockito.mock(CollisionCircle.class);
         when(circleMock.getRadius()).thenReturn(radius);
         when(circleMock.getShape()).thenReturn(Shape.CIRCLE);
         Position pos = new Position(x, y);
-        CollisionTestData ctdMock = Mockito.mock(CollisionTestData.class);
+        CollisionTestData<CollisionCircle> ctdMock = Mockito.mock(CollisionTestData.class);
         when(ctdMock.getcShape()).thenReturn(circleMock);
         when(ctdMock.getPos()).thenReturn(pos);
         return ctdMock;

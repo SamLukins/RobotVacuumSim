@@ -138,7 +138,7 @@ class RobotVacuumIntegrationTest {
                 Map.of(
                         new Position(0.0, 0.0),
                         new Room(Map.of(
-                                new Position(8.0, 5.0), new Wall(new CollisionRectangle(2.0, 10.0))
+                                new Position(7.0, 0.0), new Wall(new CollisionRectangle(2.0, 10.0))
                         ))
                 ),
                 FlooringType.HARD
@@ -176,8 +176,8 @@ class RobotVacuumIntegrationTest {
                 Map.of(
                         new Position(0.0, 0.0),
                         new Room(Map.of(
-                                new Position(8.0, 5.0), new Wall(new CollisionRectangle(2.0, 10.0)),
-                                new Position(5.0, 8.0), new Wall(new CollisionRectangle(10.0, 2.0))
+                                new Position(7.0, 0.0), new Wall(new CollisionRectangle(2.0, 10.0)),
+                                new Position(0.0, 7.0), new Wall(new CollisionRectangle(10.0, 2.0))
                         ))
                 ),
                 FlooringType.HARD
@@ -215,8 +215,8 @@ class RobotVacuumIntegrationTest {
                 Map.of(
                         new Position(0.0, 0.0),
                         new Room(Map.of(
-                                new Position(8.0, 5.0), new Wall(new CollisionRectangle(2.0, 10.0)),
-                                new Position(5.0, 8.0), new Wall(new CollisionRectangle(10.0, 2.0))
+                                new Position(7.0, 0.0), new Wall(new CollisionRectangle(2.0, 10.0)),
+                                new Position(0.0, 7.0), new Wall(new CollisionRectangle(10.0, 2.0))
                         ))
                 ),
                 FlooringType.HARD
@@ -254,8 +254,8 @@ class RobotVacuumIntegrationTest {
                 Map.of(
                         new Position(0.0, 0.0),
                         new Room(Map.of(
-                                new Position(8.0, 5.0), new Wall(new CollisionRectangle(2.0, 10.0)),
-                                new Position(5.0, 8.0), new Wall(new CollisionRectangle(10.0, 2.0))
+                                new Position(7.0, 0.0), new Wall(new CollisionRectangle(2.0, 10.0)),
+                                new Position(0.0, 7.0), new Wall(new CollisionRectangle(10.0, 2.0))
                         ))
                 ),
                 FlooringType.HARD

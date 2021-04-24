@@ -20,8 +20,8 @@ class CollisionDetectorDynamicTest {
 
     @Test
     void detectDynamicCollisionBetweenCircleAndRectangleLineMovement() {
-        CollisionTestData robotTestData = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
-        CollisionTestData wallTestData = generateMockCollisionRectangleTestData(4.0, 1.0, 2.0, 2.0);
+        CollisionTestData<CollisionCircle> robotTestData = generateMockCollisionCircleTestData(1.0, 1.0, 1.0);
+        CollisionTestData<CollisionRectangle> wallTestData = generateMockCollisionRectangleTestData(3.0, 0.0, 2.0, 2.0);
         final ProposedMovement proposedMovement =
                 new ProposedMovement(new MovementLineSegment(robotTestData.getPos(), new Position(5.0, 1.0)));
 
@@ -42,24 +42,24 @@ class CollisionDetectorDynamicTest {
         assertEquals(1.0, collision.getCollisionPosition().getY(), 0.00001);
     }
 
-    private CollisionTestData generateMockCollisionRectangleTestData(double x, double y, double width, double height) {
+    private CollisionTestData<CollisionRectangle> generateMockCollisionRectangleTestData(double x, double y, double width, double height) {
         CollisionRectangle rectMock = Mockito.mock(CollisionRectangle.class);
         when(rectMock.getHeight()).thenReturn(height);
         when(rectMock.getWidth()).thenReturn(width);
         when(rectMock.getShape()).thenReturn(Shape.RECTANGLE);
         Position pos = new Position(x, y);
-        CollisionTestData ctdMock = Mockito.mock(CollisionTestData.class);
+        CollisionTestData<CollisionRectangle> ctdMock = Mockito.mock(CollisionTestData.class);
         when(ctdMock.getcShape()).thenReturn(rectMock);
         when(ctdMock.getPos()).thenReturn(pos);
         return ctdMock;
     }
 
-    private CollisionTestData generateMockCollisionCircleTestData(double x, double y, double radius) {
+    private CollisionTestData<CollisionCircle> generateMockCollisionCircleTestData(double x, double y, double radius) {
         CollisionCircle circleMock = Mockito.mock(CollisionCircle.class);
         when(circleMock.getRadius()).thenReturn(radius);
         when(circleMock.getShape()).thenReturn(Shape.CIRCLE);
         Position pos = new Position(x, y);
-        CollisionTestData ctdMock = Mockito.mock(CollisionTestData.class);
+        CollisionTestData<CollisionCircle> ctdMock = Mockito.mock(CollisionTestData.class);
         when(ctdMock.getcShape()).thenReturn(circleMock);
         when(ctdMock.getPos()).thenReturn(pos);
         return ctdMock;

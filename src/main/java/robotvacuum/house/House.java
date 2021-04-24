@@ -81,50 +81,26 @@ public class House implements Serializable {
      * if the room intersects another room without being entirely inside it,
      * or if the room's walls intersect furniture.
      *
-     * @param originPointX  the x-coordinate of the top left corner of the room
-     * @param originPointY  the y-coordinate of the top left corner of the room
-     * @param roomWidth     the given width of the room
-     * @param roomHeight    the given height of the room
+     * @param pos
+     * @param room
      */
-    public void addRoom(double originPointX, double originPointY, double roomWidth, double roomHeight) {
-        //create walls
-        Map<Position, Wall> wallMap = new HashMap<>();
-        /*Walls occupying same space
-        wallMap.put(new Position(originPointX, originPointY), new Wall(new Position(originPointX, originPointY), new CollisionRectangle(WALL_THICKNESS, roomHeight)));     //left wall
-        wallMap.put(new Position(originPointX, originPointY), new Wall(new Position(originPointX, originPointY), new CollisionRectangle(roomWidth, WALL_THICKNESS)));   //top wall
-        wallMap.put(new Position((originPointX + roomWidth - WALL_THICKNESS), originPointY), new Wall(new Position((originPointX + roomWidth - WALL_THICKNESS), originPointY), new CollisionRectangle(WALL_THICKNESS, roomHeight)));   //right wall
-        wallMap.put(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new CollisionRectangle(roomWidth, WALL_THICKNESS)));  //bottom wall
-        */
-        //Walls not occupying same space, absolute value
-//        wallMap.put(new Position(originPointX, originPointY), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));     //left wall
-//        wallMap.put(new Position((originPointX + WALL_THICKNESS), originPointY), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));   //top wall
-//        wallMap.put(new Position((originPointX + roomWidth - WALL_THICKNESS), (originPointY + WALL_THICKNESS)), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));   //right wall
-//        wallMap.put(new Position(originPointX, (originPointY + roomHeight - WALL_THICKNESS)), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));  //bottom wall
-        //Walls not occupying same space, relative value
-        wallMap.put(new Position(0, 0), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));     //left wall
-        wallMap.put(new Position((WALL_THICKNESS), 0), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));   //top wall
-        wallMap.put(new Position((roomWidth - WALL_THICKNESS), WALL_THICKNESS), new Wall(new CollisionRectangle(WALL_THICKNESS, (roomHeight - WALL_THICKNESS))));   //right wall
-        wallMap.put(new Position(0, (roomHeight - WALL_THICKNESS)), new Wall(new CollisionRectangle((roomWidth - WALL_THICKNESS), WALL_THICKNESS)));  //bottom wall
-        
-        Room newRoom = new Room(wallMap);
+    public void addRoom(Position pos, Room room) {
         //check eligibility
-        if (roomWidth * roomHeight < MIN_ROOM_SIZE) {
+        if (room.getSize() < MIN_ROOM_SIZE) {
             System.out.println("Invalid size: room cannot be smaller than 4 sq ft.");
             return;
         }
 
-        if (originPointX < BASE_ROOM_X || originPointY < BASE_ROOM_Y
-                || originPointX > (BASE_ROOM_X + houseWidth)
-                || originPointY > (BASE_ROOM_Y + houseHeight)) {
-            System.out.println("Invalid location: out of bounds.");
-            return;
+        if (pos.getX() < BASE_ROOM_X || pos.getY() < BASE_ROOM_Y
+                || pos.getX() > (BASE_ROOM_X + houseWidth)
+                || pos.getY() > (BASE_ROOM_Y + houseHeight)) {
+            throw new IllegalArgumentException("Invalid location: out of bounds.");
         }
         //if room intersects another room without being entirely inside it
         //if room's walls intersect furniture
 
         //add room to house
-        rooms.put(new Position(originPointX, originPointY), newRoom);
-        System.out.println("Room added.");
+        rooms.put(pos, room);
     }
 
     /**

@@ -11,10 +11,10 @@ public class Collision {
      */
     private final double collisionDirection;
 
-    private final CollisionTestData ctd1;
-    private final CollisionTestData ctd2;
+    private final CollisionTestData<? extends CollisionShape> ctd1;
+    private final CollisionTestData<? extends CollisionShape> ctd2;
 
-    public Collision(Position collisionPosition, double collisionDirection, CollisionTestData ctd1, CollisionTestData ctd2) {
+    public Collision(Position collisionPosition, double collisionDirection, CollisionTestData<? extends CollisionShape> ctd1, CollisionTestData<? extends CollisionShape> ctd2) {
         this.collisionPosition = collisionPosition;
         this.collisionDirection = collisionDirection;
         this.ctd1 = ctd1;
@@ -42,11 +42,11 @@ public class Collision {
         return collisionDirection;
     }
 
-    public CollisionTestData getCtd1() {
+    public CollisionTestData<? extends CollisionShape> getCtd1() {
         return ctd1;
     }
 
-    public CollisionTestData getCtd2() {
+    public CollisionTestData<? extends CollisionShape> getCtd2() {
         return ctd2;
     }
 }

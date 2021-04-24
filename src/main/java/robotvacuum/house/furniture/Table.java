@@ -1,5 +1,6 @@
 package robotvacuum.house.furniture;
 
+import robotvacuum.collision.CollisionShape;
 import robotvacuum.collision.CollisionTestData;
 import robotvacuum.collision.Position;
 
@@ -40,8 +41,8 @@ public class Table implements Furniture, Serializable {
     }
 
     @Override
-    public Collection<CollisionTestData> getCollisionTestData() {
-        return legs.entrySet().stream().map(e -> new CollisionTestData(e.getKey(), e.getValue().getcShape())).collect(Collectors.toSet());
+    public Collection<CollisionTestData<? extends CollisionShape>> getCollisionTestData() {
+        return legs.entrySet().stream().map(e -> new CollisionTestData<CollisionShape>(e.getKey(), e.getValue().getcShape())).collect(Collectors.toSet());
     }
 
     @Override

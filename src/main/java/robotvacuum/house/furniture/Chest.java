@@ -2,6 +2,9 @@ package robotvacuum.house.furniture;
 
 import java.util.Collection;
 import java.util.Set;
+
+import robotvacuum.collision.CollisionRectangle;
+import robotvacuum.collision.CollisionShape;
 import robotvacuum.collision.CollisionTestData;
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,14 +15,14 @@ import java.util.Objects;
 
 public class Chest implements Furniture, Serializable {
 
-    private final CollisionTestData cData;
+    private final CollisionTestData<CollisionRectangle> cData;
 
-    public Chest(CollisionTestData cData) {
+    public Chest(CollisionTestData<CollisionRectangle> cData) {
         this.cData = cData;
     }
 
     @Override
-    public Collection<CollisionTestData> getCollisionTestData() {
+    public Collection<CollisionTestData<? extends CollisionShape>> getCollisionTestData() {
         return Set.of(cData);
     }
 
@@ -28,7 +31,7 @@ public class Chest implements Furniture, Serializable {
      *
      * @return the value of cData
      */
-    public CollisionTestData getcData() {
+    public CollisionTestData<CollisionRectangle> getcData() {
         return cData;
     }
 
@@ -51,9 +54,6 @@ public class Chest implements Furniture, Serializable {
             return false;
         }
         final Chest other = (Chest) obj;
-        if (!Objects.equals(this.cData, other.cData)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.cData, other.cData);
     }
 }

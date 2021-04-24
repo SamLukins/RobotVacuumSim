@@ -1,15 +1,21 @@
 package robotvacuum.house;
 
 import org.junit.jupiter.api.Test;
+import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
 import robotvacuum.io.Serializer;
 import robotvacuum.house.furniture.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author SamL and Austen Seidler
@@ -40,20 +46,35 @@ public class HouseIT {
     public void testSerializer() throws IOException, ClassNotFoundException {
         House h1 = new House(20, 25, FlooringType.FRIEZE);
         Serializer s = new Serializer();
-        h1.addRoom(5, 5, 4, 4);
-        h1.addRoom(2.5, 3, 2, 1.5);
+
+        final Position position = new Position(5.0, 5.0);
+        Room newRoom = makeRoom(0.3, 4.0, 4.0);
+
+        final Position position2 = new Position(2.5, 3.0);
+        Room newRoom2 = makeRoom(0.3, 2.0, 1.5);
+
+        h1.addRoom(position, newRoom);
+        h1.addRoom(position2, newRoom2);
+
         s.serializeHouse(h1, "sTest");
         House h2 = s.deserializeHouse("sTest");
-        assertNotNull(h2.getRoom(new Position(5, 5)));
-        assertNotNull(h2.getRoom(new Position(2.5, 3)));
-        assertNull(h2.getRoom(new Position(6, 18)));
-        assertEquals(h2.getFloorCovering(), FlooringType.FRIEZE);
+
+        assertEquals(3, h2.getRooms().size());
+        assertTrue(h2.getRooms().containsKey(new Position(5, 5)));
+        assertTrue(h2.getRooms().containsKey(new Position(2.5, 3)));
+        assertFalse(h2.getRooms().containsKey(new Position(6, 18)));
+        assertEquals(FlooringType.FRIEZE, h2.getFloorCovering());
     }
     
     @Test
     public void testRemoveRoom() {
+        final Position position = new Position(5.0, 5.0);
+        Room newRoom = makeRoom(0.3, 4.0, 4.0);
+
         House h1 = new House(20, 25, FlooringType.HARD);
-        h1.addRoom(5, 5, 4, 4);
+
+        h1.addRoom(position, newRoom);
+
         assertNotNull(h1.getRoom(new Position(5, 5)));
         h1.removeRoom(new Position(5, 5));
         assertNull(h1.getRoom(new Position(5, 5)));
@@ -61,18 +82,26 @@ public class HouseIT {
     
     @Test
     public void testAddDoor() {
-        House h1 = new House(20, 25, FlooringType.HARD);
-        h1.addRoom(5, 5, 4, 4);
-        //System.out.println("Old width: " + h1.getRoom(new Position(5, 5)).getWall(new Position(5, 5)).getcRect().getHeight());
-        h1.getRoom(new Position(5, 5)).addDoor(new Position(5, 5), 100);
-        assertNull(h1.getRoom(new Position(5, 5)).getWall(new Position(5, 7.35)));
-        h1.getRoom(new Position(5, 5)).addDoor(new Position(5, 5), 1);
-        assertNotNull(h1.getRoom(new Position(5, 5)).getWall(new Position(5, 5)));
-        //System.out.println("New width: " + h1.getRoom(new Position(5, 5)).getWall(new Position(5, 5)).getcRect().getHeight());
-        assertNotNull(h1.getRoom(new Position(5, 5)).getWall(new Position(5, 7.35)));
+        Room newRoom = makeRoom(0.3, 4.0, 4.0);
+
+        assertThrows(IllegalArgumentException.class, () -> { newRoom.addDoor(new Position(0, 0), 100); });
+        assertNull(newRoom.getWall(new Position(0, 2.35)));
+        newRoom.addDoor(new Position(0, 0), 1);
+        assertNotNull(newRoom.getWall(new Position(0, 0)));
+        assertNotNull(newRoom.getWall(new Position(0, 2.35)));
     }
-    
-//    @Test
+
+    private Room makeRoom(double wallThickness, double roomWidth, double roomHeight) {
+        Map<Position, Wall> wallMap = new HashMap<>();
+        wallMap.put(new Position(0, 0), new Wall(new CollisionRectangle(wallThickness, (roomHeight - wallThickness))));     //left wall
+        wallMap.put(new Position(wallThickness, 0), new Wall(new CollisionRectangle((roomWidth - wallThickness), wallThickness)));   //top wall
+        wallMap.put(new Position((roomWidth - wallThickness), wallThickness), new Wall(new CollisionRectangle(wallThickness, (roomHeight - wallThickness))));   //right wall
+        wallMap.put(new Position(0, (roomHeight - wallThickness)), new Wall(new CollisionRectangle((roomWidth - wallThickness), wallThickness)));  //bottom wall
+
+        return new Room(wallMap);
+    }
+
+    //    @Test
 //    public void oldTestRemoveFurniture() {
 //        House h1 = new House(60, 80, FlooringType.HARD);
 //        h1.addChestToRoom(h1.getRoom(new Position(0, 0)), 20, 20, 10, 10);
