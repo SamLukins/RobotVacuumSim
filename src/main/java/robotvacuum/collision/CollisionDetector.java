@@ -1,6 +1,7 @@
 package robotvacuum.collision;
 
 import robotvacuum.house.House;
+import robotvacuum.house.furniture.Furniture;
 import robotvacuum.robot.ActualMovement;
 import robotvacuum.robot.ProposedMovement;
 import robotvacuum.robot.RobotVacuum;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author SamL
@@ -65,6 +67,7 @@ public class CollisionDetector {
 
     /**
      * positions are expected to be the top left corner
+     *
      * @param rawCtd1
      * @param rawCtd2
      * @return
@@ -227,17 +230,23 @@ public class CollisionDetector {
     }
 
     public ActualMovement detectDynamicCollision(RobotVacuum<? extends VacuumStrategy> rv, House house, ProposedMovement proposedMovement) {
+        Stream<CollisionTestData<CollisionShape>> wallCollisionTestDataStream = house.getRooms().entrySet().stream().flatMap(
+                entry -> entry
+                        .getValue()
+                        .getWalls()
+                        .entrySet()
+                        .stream()
+                        .map(wallEntry -> new CollisionTestData<CollisionShape>(entry.getKey().offsetPositionCartesian(wallEntry.getKey()),
+                                wallEntry.getValue().getcRect())));
+
+
+        Stream<CollisionTestData<? extends CollisionShape>> furnitureCollisionTestDataStream = house.getRooms().values().stream()
+                .flatMap(room -> room.getAllFurniture().stream().flatMap(furniture -> furniture.getCollisionTestData().stream()));
+
         return detectDynamicCollision(
                 new CollisionTestData<>(rv.getrSimState().getPosition(), rv.getProperties().getcCircle()),
-                house.getRooms().entrySet().stream().flatMap(
-                        entry -> entry
-                                .getValue()
-                                .getWalls()
-                                .entrySet()
-                                .stream()
-                                .map(wallEntry -> new CollisionTestData<CollisionShape>(entry.getKey().offsetPositionCartesian(wallEntry.getKey()),
-                                        wallEntry.getValue().getcRect()))
-                ).collect(Collectors.toSet()),
+                Stream.concat(wallCollisionTestDataStream, furnitureCollisionTestDataStream)
+                        .collect(Collectors.toSet()),
                 proposedMovement);
     }
 
