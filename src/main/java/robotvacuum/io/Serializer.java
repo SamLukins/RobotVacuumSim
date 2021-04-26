@@ -1,6 +1,7 @@
 package robotvacuum.io;
 
 import robotvacuum.house.House;
+import robotvacuum.simulation.Simulator;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,5 +43,22 @@ public class Serializer {
             h = (House) objectInput.readObject();
         }
         return h;
+    }
+    
+    public void serializeResults(Simulator s, String resultsName) throws IOException {
+        FileOutputStream fileOutput = new FileOutputStream("savedResults/" + resultsName + ".txt");
+        try (ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput)) {
+            objectOutput.writeObject(s);
+            objectOutput.flush();
+        }
+    }
+    
+    public Simulator deserializeResults(String resultsName) throws IOException, ClassNotFoundException {
+        FileInputStream fileInput = new FileInputStream("savedResults/" + resultsName + ".txt");
+        Simulator s;
+        try (ObjectInputStream objectInput = new ObjectInputStream(fileInput)) {
+            s = (Simulator) objectInput.readObject();
+        }
+        return s;
     }
 }

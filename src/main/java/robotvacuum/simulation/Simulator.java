@@ -10,8 +10,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.Serializable;
 
-public class Simulator {
+public class Simulator implements Serializable {
     //**********************
     //test code - not final
     //**********************
@@ -166,5 +167,9 @@ public class Simulator {
             cleanSpots.put(new Rectangle((int)((p.getX()/2)*HouseManager.SCALE_FACTOR), (int)((p.getY()/2)*HouseManager.SCALE_FACTOR), (int)HouseManager.SCALE_FACTOR/2, (int)HouseManager.SCALE_FACTOR/2), cleanlinessMap.get(p));
         }
         return cleanSpots;
+    }
+    
+    public House getHouse() {
+        return h;
     }
 }

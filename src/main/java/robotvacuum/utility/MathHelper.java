@@ -4,7 +4,9 @@ import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.CollisionTestData;
 import robotvacuum.collision.Position;
 
-public class MathHelper {
+import java.io.Serializable;
+
+public class MathHelper implements Serializable {
 
     private final double TWO_PI = 2 * Math.PI;
 

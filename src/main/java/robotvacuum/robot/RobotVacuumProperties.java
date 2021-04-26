@@ -6,10 +6,12 @@ import robotvacuum.house.FlooringType;
 import java.util.EnumMap;
 import java.util.Map;
 
+import java.io.Serializable;
+
 /**
  * @author SamL
  */
-public class RobotVacuumProperties {
+public class RobotVacuumProperties implements Serializable {
     private final CollisionCircle cCircle;
     private final double vacuumWidth;
     private final Map<FlooringType, Double> vacuumEfficiency;

@@ -6,8 +6,9 @@ import robotvacuum.utility.MathHelper;
 
 import java.util.Collection;
 import java.util.Random;
+import java.io.Serializable;
 
-public class RandomVacuumStrategy implements VacuumStrategy {
+public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
 
     private final double defaultVacuumDistance;
     private double previousDirection = 0.0;

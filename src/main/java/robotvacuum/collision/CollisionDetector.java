@@ -1,7 +1,7 @@
 package robotvacuum.collision;
 
 import robotvacuum.house.House;
-import robotvacuum.house.furniture.Furniture;
+//import robotvacuum.house.furniture.Furniture;
 import robotvacuum.robot.ActualMovement;
 import robotvacuum.robot.ProposedMovement;
 import robotvacuum.robot.RobotVacuum;
@@ -13,11 +13,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.Serializable;
 
 /**
  * @author SamL
  */
-public class CollisionDetector {
+public class CollisionDetector implements Serializable {
 
     private final MathHelper mathHelper;
 

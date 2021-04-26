@@ -54,7 +54,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="cancelButton" min="-2" pref="80" max="-2" attributes="0"/>
-                      <EmptySpace pref="26" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -84,9 +84,9 @@
                   <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="cancelButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="createButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="createButton" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="errorText" min="-2" pref="18" max="-2" attributes="0"/>
@@ -98,12 +98,12 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Furniture Width:"/>
+        <Property name="text" type="java.lang.String" value="Furniture Width (m):"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Furniture Height:"/>
+        <Property name="text" type="java.lang.String" value="Furniture Height (m):"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="widthField">

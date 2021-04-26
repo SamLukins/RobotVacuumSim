@@ -31,6 +31,7 @@ public class HouseEditor extends javax.swing.JFrame {
         initComponents();
         h = new HouseManager();
         gui = new HouseGUI();
+        s = null;
         moveVacuum = true;
         notStartedYet = true;
         t1 = new Thread(() -> {
@@ -87,6 +88,10 @@ public class HouseEditor extends javax.swing.JFrame {
         cleanableAreaText = new javax.swing.JLabel();
         cleanPercentText = new javax.swing.JLabel();
         stopVacuumButton = new javax.swing.JButton();
+        loadResultsButton = new javax.swing.JButton();
+        saveResultsButton = new javax.swing.JButton();
+        loadResultsField = new javax.swing.JTextField();
+        saveResultsField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("House Editor");
@@ -272,6 +277,22 @@ public class HouseEditor extends javax.swing.JFrame {
             }
         });
 
+        loadResultsButton.setText("Load results");
+        loadResultsButton.setEnabled(false);
+        loadResultsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                loadResultsButtonMouseClicked(evt);
+            }
+        });
+
+        saveResultsButton.setText("Save results");
+        saveResultsButton.setEnabled(false);
+        saveResultsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                saveResultsButtonMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -287,14 +308,19 @@ public class HouseEditor extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(createVacuumButton, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                                    .addComponent(deleteVacuumButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(deleteVacuumButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(loadResultsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(saveResultsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(startVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(pauseVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(stopVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(loadResultsField, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(stopVacuumButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                                        .addComponent(saveResultsField, javax.swing.GroupLayout.Alignment.LEADING))))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(cleanableAreaText, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -316,16 +342,22 @@ public class HouseEditor extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(stopVacuumButton)
-                    .addComponent(deleteVacuumButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(deleteVacuumButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(loadResultsButton)
+                            .addComponent(loadResultsField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(saveResultsField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(saveResultsButton))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cleanableAreaText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(outputText, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cleanPercentText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(cleanableAreaText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cleanPercentText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(outputText, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -349,6 +381,7 @@ public class HouseEditor extends javax.swing.JFrame {
                 deleteChestButton.setEnabled(true);
                 deleteTableButton.setEnabled(true);
                 createVacuumButton.setEnabled(true);
+                loadResultsButton.setEnabled(true);
             } else {
                 gui.redoAll(h.getWalls(), h.getChests(), h.getTableLegs(),
                         h.getFloorCode(), (int) h.getHouseWidth(), (int) h.getHouseHeight());
@@ -373,6 +406,7 @@ public class HouseEditor extends javax.swing.JFrame {
                 deleteChestButton.setEnabled(true);
                 deleteTableButton.setEnabled(true);
                 createVacuumButton.setEnabled(true);
+                loadResultsButton.setEnabled(true);
             } else {
                 gui.redoAll(h.getWalls(), h.getChests(), h.getTableLegs(),
                         h.getFloorCode(), (int) h.getHouseWidth(), (int) h.getHouseHeight());
@@ -528,6 +562,7 @@ public class HouseEditor extends javax.swing.JFrame {
                 addTableButton.setEnabled(false);
                 deleteTableButton.setEnabled(false);
                 createVacuumButton.setEnabled(false);
+                saveResultsButton.setEnabled(false);
                 gui.redoVacuum(s.getVacuumShape());
                 gui.redo(h.getWalls(), h.getChests(), h.getTableLegs());
                 outputText.setText("Vacuum created.");
@@ -541,6 +576,7 @@ public class HouseEditor extends javax.swing.JFrame {
             pauseVacuumButton.setEnabled(true);
             stopVacuumButton.setEnabled(true);
             deleteVacuumButton.setEnabled(false);
+            loadResultsButton.setEnabled(false);
             outputText.setText("Vacuum started.");
             moveVacuum = true;
             if (notStartedYet) {
@@ -573,9 +609,11 @@ public class HouseEditor extends javax.swing.JFrame {
             addTableButton.setEnabled(true);
             deleteTableButton.setEnabled(true);
             createVacuumButton.setEnabled(true);
+            loadResultsButton.setEnabled(true);
             startVacuumButton.setEnabled(false);
             deleteVacuumButton.setEnabled(false);
             stopVacuumButton.setEnabled(false);
+            saveResultsButton.setEnabled(false);
             gui.redoVacuum(null);
             gui.redo(h.getWalls(), h.getChests(), h.getTableLegs());
             outputText.setText("Vacuum deleted.");
@@ -591,10 +629,51 @@ public class HouseEditor extends javax.swing.JFrame {
             startVacuumButton.setEnabled(false);
             deleteVacuumButton.setEnabled(true);
             createVacuumButton.setEnabled(true);
+            saveResultsButton.setEnabled(true);
+            loadResultsButton.setEnabled(true);
             moveVacuum = false;
             gui.paintCleanSpots(s.getCleanSpots());
         }
     }//GEN-LAST:event_stopVacuumButtonMouseClicked
+
+    private void loadResultsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loadResultsButtonMouseClicked
+        if (loadResultsButton.isEnabled()) {
+            try {
+                Simulator temp = h.getSerializer().deserializeResults(loadResultsField.getText());
+                ViewResults v = new ViewResults(this, true);
+                v.loadInResults(temp, gui);
+                v.setVisible(true);
+                if (s != null) {
+                    gui.redoVacuum(s.getVacuumShape());
+                    gui.redoAll(h.getWalls(), h.getChests(), h.getTableLegs(),
+                            h.getFloorCode(), (int) h.getHouseWidth(), (int) h.getHouseHeight()); 
+                    gui.paintCleanSpots(s.getCleanSpots());
+                }
+                else {
+                    gui.redoVacuum(null);
+                    gui.redoAll(h.getWalls(), h.getChests(), h.getTableLegs(),
+                            h.getFloorCode(), (int) h.getHouseWidth(), (int) h.getHouseHeight()); 
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                outputText.setText(loadResultsField.getText() + " not found.");
+            }
+        }
+    }//GEN-LAST:event_loadResultsButtonMouseClicked
+
+    private void saveResultsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveResultsButtonMouseClicked
+        if (saveResultsButton.isEnabled()) {
+            if (saveResultsField.getText().equals("")) {
+                outputText.setText("No name given!");
+            } else {
+                try {
+                    h.getSerializer().serializeResults(s, saveResultsField.getText());
+                    outputText.setText(saveResultsField.getText() + " saved to file.");
+                } catch (IOException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_saveResultsButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -636,11 +715,15 @@ public class HouseEditor extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton loadHouseButton;
     private javax.swing.JTextField loadHouseField;
+    private javax.swing.JButton loadResultsButton;
+    private javax.swing.JTextField loadResultsField;
     private javax.swing.JButton newHouseButton;
     private javax.swing.JLabel outputText;
     private javax.swing.JButton pauseVacuumButton;
     private javax.swing.JButton saveHouseButton;
     private javax.swing.JTextField saveHouseField;
+    private javax.swing.JButton saveResultsButton;
+    private javax.swing.JTextField saveResultsField;
     private javax.swing.JButton startVacuumButton;
     private javax.swing.JButton stopVacuumButton;
     // End of variables declaration//GEN-END:variables
