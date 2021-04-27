@@ -34,6 +34,8 @@ public class ViewResults extends javax.swing.JDialog {
         vacuumSpeedText = new javax.swing.JLabel();
         percentCleanedText = new javax.swing.JLabel();
         closeButton = new javax.swing.JButton();
+        remainingBatteryText = new javax.swing.JLabel();
+        totalRuntimeText = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -56,6 +58,10 @@ public class ViewResults extends javax.swing.JDialog {
             }
         });
 
+        remainingBatteryText.setText("Remaining Battery: ");
+
+        totalRuntimeText.setText("Total Runtime: ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -71,7 +77,9 @@ public class ViewResults extends javax.swing.JDialog {
                     .addComponent(vacuumEfficiencyText, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                     .addComponent(whiskerEfficiencyText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(vacuumSpeedText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(percentCleanedText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(percentCleanedText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(remainingBatteryText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(totalRuntimeText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -89,7 +97,11 @@ public class ViewResults extends javax.swing.JDialog {
                 .addComponent(vacuumSpeedText)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(percentCleanedText)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(remainingBatteryText)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(totalRuntimeText)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(closeButton)
                 .addContainerGap())
         );
@@ -105,13 +117,15 @@ public class ViewResults extends javax.swing.JDialog {
     public void loadInResults(Simulator s, HouseGUI gui) {
         HouseManager h = new HouseManager();
         h.setHouse(s.getHouse());
-        batteryLifeText.setText("Max Battery Life: " + s.getVacuum().getProperties().getMaxBatteryLife());
+        batteryLifeText.setText("Max Battery Life: " + s.getVacuum().getProperties().getMaxBatteryLife() + " min");
         vacuumEfficiencyText.setText("Vacuum Efficiency: " + 
                 (int)(s.getVacuum().getProperties().getVacuumEfficiency().get(h.getHouse().getFloorCovering())*100) + "%");
         whiskerEfficiencyText.setText("Whisker Efficiency: " + 
                 (int)(s.getVacuum().getProperties().getWhiskersEfficiency().get(h.getHouse().getFloorCovering())*100) + "%");
         vacuumSpeedText.setText("Vacuum Speed: " + (int)(s.getVacuum().getProperties().getSpeed()*100) + " cm/s");
-        percentCleanedText.setText("Percent Cleaned: " + (int)s.getCleanPercent());
+        percentCleanedText.setText("Percent Cleaned: " + (int)s.getCleanPercent() + "%");
+        remainingBatteryText.setText("Remaining Battery: " + (int)(s.getVacuum().getrSimState().getRemainingBattery()) + " min");
+        totalRuntimeText.setText("Total Runtime: " + (s.getVacuum().getProperties().getMaxBatteryLife() - (int)(s.getVacuum().getrSimState().getRemainingBattery())) + " min");
         VacuumStrategy v = s.getVacuum().getVacuumStrategy();
         if (v instanceof RandomVacuumStrategy) {
             pathingAlgorithmText.setText("Pathing Algorithm: Random");
@@ -172,6 +186,8 @@ public class ViewResults extends javax.swing.JDialog {
     private javax.swing.JButton closeButton;
     private javax.swing.JLabel pathingAlgorithmText;
     private javax.swing.JLabel percentCleanedText;
+    private javax.swing.JLabel remainingBatteryText;
+    private javax.swing.JLabel totalRuntimeText;
     private javax.swing.JLabel vacuumEfficiencyText;
     private javax.swing.JLabel vacuumSpeedText;
     private javax.swing.JLabel whiskerEfficiencyText;

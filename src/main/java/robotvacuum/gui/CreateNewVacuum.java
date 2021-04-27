@@ -46,13 +46,14 @@ public class CreateNewVacuum extends javax.swing.JDialog {
         xField = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         yField = new javax.swing.JTextField();
+        quickTestCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Create New Vacuum");
 
-        jLabel1.setText("Battery Life:");
+        jLabel1.setText("Battery Life (min):");
 
-        jLabel2.setText("Vacuum Efficiency:");
+        jLabel2.setText("Vacuum Efficiency (%):");
 
         jLabel3.setText("Pathing Algorithm:");
 
@@ -98,7 +99,7 @@ public class CreateNewVacuum extends javax.swing.JDialog {
         vacuumSpeedSlider.setPaintTicks(true);
         vacuumSpeedSlider.setValue(30);
 
-        jLabel5.setText("Whisker Efficiency:");
+        jLabel5.setText("Whisker Efficiency (%):");
 
         vacuumEfficiencySlider.setMajorTickSpacing(10);
         vacuumEfficiencySlider.setMaximum(90);
@@ -120,6 +121,8 @@ public class CreateNewVacuum extends javax.swing.JDialog {
 
         jLabel7.setText("Vacuum Y:");
 
+        quickTestCheckBox.setText("Quick Test (much lower battery life)");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -131,14 +134,15 @@ public class CreateNewVacuum extends javax.swing.JDialog {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
+                            .addComponent(jLabel3)
+                            .addComponent(quickTestCheckBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane1)
                             .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(batteryLifeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -147,7 +151,7 @@ public class CreateNewVacuum extends javax.swing.JDialog {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 10, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addGap(18, 18, 18)
@@ -194,13 +198,16 @@ public class CreateNewVacuum extends javax.swing.JDialog {
                 .addGap(13, 13, 13)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(16, 16, 16)
+                        .addComponent(quickTestCheckBox)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(createButton)
                     .addComponent(cancelButton))
-                .addGap(18, 18, Short.MAX_VALUE)
-                .addComponent(errorText, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(errorText, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -212,6 +219,9 @@ public class CreateNewVacuum extends javax.swing.JDialog {
             x = Double.parseDouble(xField.getText());
             y = Double.parseDouble(yField.getText());
             batteryLife = batteryLifeSlider.getValue();
+            if (quickTestCheckBox.isSelected()) {
+                batteryLife = 20;
+            }
             vacuumEfficiency = vacuumEfficiencySlider.getValue();
             whiskerEfficiency = whiskerEfficiencySlider.getValue();
             vacuumSpeed = vacuumSpeedSlider.getValue();
@@ -294,6 +304,7 @@ public class CreateNewVacuum extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> pathingAlgorithmList;
+    private javax.swing.JCheckBox quickTestCheckBox;
     private javax.swing.JSlider vacuumEfficiencySlider;
     private javax.swing.JSlider vacuumSpeedSlider;
     private javax.swing.JSlider whiskerEfficiencySlider;

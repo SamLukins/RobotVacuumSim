@@ -36,6 +36,8 @@
                   <Component id="whiskerEfficiencyText" alignment="0" max="32767" attributes="0"/>
                   <Component id="vacuumSpeedText" max="32767" attributes="0"/>
                   <Component id="percentCleanedText" alignment="0" max="32767" attributes="0"/>
+                  <Component id="remainingBatteryText" alignment="0" max="32767" attributes="0"/>
+                  <Component id="totalRuntimeText" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -56,7 +58,11 @@
               <Component id="vacuumSpeedText" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="percentCleanedText" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="78" max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="remainingBatteryText" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="totalRuntimeText" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="28" max="32767" attributes="0"/>
               <Component id="closeButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -101,6 +107,16 @@
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="closeButtonMouseClicked"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="remainingBatteryText">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remaining Battery: "/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="totalRuntimeText">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Total Runtime: "/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

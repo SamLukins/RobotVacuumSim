@@ -23,6 +23,7 @@ public class HouseEditor extends javax.swing.JFrame {
     HouseGUI gui;
     boolean moveVacuum, notStartedYet;
     Thread t1;
+    long accumulatedSleep;
 
     /**
      * Creates new form HouseEditor
@@ -35,24 +36,39 @@ public class HouseEditor extends javax.swing.JFrame {
         moveVacuum = true;
         notStartedYet = true;
         t1 = new Thread(() -> {
-            int i = 0;
+            accumulatedSleep = 0;
             while (true) {
                 while (moveVacuum) {
                     long sleepTime = s.movement();
                     cleanPercentText.setText("Percent cleaned: " + (int)s.getCleanPercent() + "%");
                     gui.redoVacuum(s.getVacuumShape());
                     try {
-                        int defaultSpeed = 5;
+                        int defaultSpeed;
+                        if (x5SpeedButton.isSelected()) {
+                            defaultSpeed = 5;
+                        }
+                        else if (x50SpeedButton.isSelected()) {
+                            defaultSpeed = 50;
+                        }
+                        else {
+                            defaultSpeed = 1;
+                        }
                         Thread.sleep(sleepTime/ defaultSpeed);
 //                        Thread.sleep(100);
 //                    Thread.sleep(distance/s.);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    i++;
-                    if (i == 10) {
+                    accumulatedSleep = accumulatedSleep + sleepTime;
+                    if (accumulatedSleep >= 1000) {
                         gui.paintCleanSpots(s.getCleanSpots());
-                        i = 0;
+                        s.getVacuum().getrSimState().setRemainingBattery(s.getVacuum().getrSimState().getRemainingBattery()-(1.0/60.0));
+                        accumulatedSleep = accumulatedSleep - 1000;
+                    }
+                    remainingBatteryText.setText("Remaining battery: " + (int)s.getVacuum().getrSimState().getRemainingBattery() + " min");
+                    if (s.getVacuum().getrSimState().getRemainingBattery() <= 0) {
+                        stopVacuum();
+                        outputText.setText("Vacuum battery has run out.");
                     }
                 }
                 Thread.onSpinWait();
@@ -68,6 +84,7 @@ public class HouseEditor extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        selectSpeedGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         newHouseButton = new javax.swing.JButton();
         loadHouseButton = new javax.swing.JButton();
@@ -93,6 +110,10 @@ public class HouseEditor extends javax.swing.JFrame {
         saveResultsButton = new javax.swing.JButton();
         loadResultsField = new javax.swing.JTextField();
         saveResultsField = new javax.swing.JTextField();
+        remainingBatteryText = new javax.swing.JLabel();
+        x1SpeedButton = new javax.swing.JRadioButton();
+        x50SpeedButton = new javax.swing.JRadioButton();
+        x5SpeedButton = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("House Editor");
@@ -294,6 +315,16 @@ public class HouseEditor extends javax.swing.JFrame {
             }
         });
 
+        selectSpeedGroup.add(x1SpeedButton);
+        x1SpeedButton.setSelected(true);
+        x1SpeedButton.setText("x1");
+
+        selectSpeedGroup.add(x50SpeedButton);
+        x50SpeedButton.setText("x50");
+
+        selectSpeedGroup.add(x5SpeedButton);
+        x5SpeedButton.setText("x5");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -318,10 +349,17 @@ public class HouseEditor extends javax.swing.JFrame {
                                         .addComponent(startVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(pauseVacuumButton, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(loadResultsField, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(stopVacuumButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                                        .addComponent(saveResultsField, javax.swing.GroupLayout.Alignment.LEADING))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(loadResultsField, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(stopVacuumButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                                            .addComponent(saveResultsField, javax.swing.GroupLayout.Alignment.LEADING))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(x1SpeedButton)
+                                            .addComponent(x5SpeedButton)
+                                            .addComponent(x50SpeedButton)))))
+                            .addComponent(remainingBatteryText, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(cleanableAreaText, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -342,7 +380,14 @@ public class HouseEditor extends javax.swing.JFrame {
                     .addComponent(pauseVacuumButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(stopVacuumButton)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(stopVacuumButton)
+                            .addComponent(x1SpeedButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(x5SpeedButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(x50SpeedButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(deleteVacuumButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -355,9 +400,12 @@ public class HouseEditor extends javax.swing.JFrame {
                             .addComponent(saveResultsButton))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cleanableAreaText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cleanableAreaText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(remainingBatteryText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(cleanPercentText, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addComponent(outputText, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -551,6 +599,8 @@ public class HouseEditor extends javax.swing.JFrame {
                 s = new Simulator(h.getHouse(), new Position(c.x, c.y), c.batteryLife, c.vacuumEfficiency, c.whiskerEfficiency, c.vacuumSpeed, c.algorithmCode);
                 cleanableAreaText.setText("Cleanable area: " + (int)s.getCleanableArea() + " sq m");
                 cleanPercentText.setText("Percent cleaned: " + (int)s.getCleanPercent() + "%");
+                remainingBatteryText.setText("Remaining battery: " + (int)s.getVacuum().getrSimState().getRemainingBattery() + " min");
+                accumulatedSleep = 0;
                 deleteVacuumButton.setEnabled(true);
                 startVacuumButton.setEnabled(true);
                 newHouseButton.setEnabled(false);
@@ -625,18 +675,23 @@ public class HouseEditor extends javax.swing.JFrame {
 
     private void stopVacuumButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopVacuumButtonMouseClicked
         if (stopVacuumButton.isEnabled()) {
-            stopVacuumButton.setEnabled(false);
-            pauseVacuumButton.setEnabled(false);
-            startVacuumButton.setEnabled(false);
-            deleteVacuumButton.setEnabled(true);
-            createVacuumButton.setEnabled(true);
-            saveResultsButton.setEnabled(true);
-            loadResultsButton.setEnabled(true);
-            moveVacuum = false;
-            gui.paintCleanSpots(s.getCleanSpots());
+            stopVacuum();
+            outputText.setText("Vacuum stopped.");
         }
     }//GEN-LAST:event_stopVacuumButtonMouseClicked
 
+    private void stopVacuum() {
+        stopVacuumButton.setEnabled(false);
+        pauseVacuumButton.setEnabled(false);
+        startVacuumButton.setEnabled(false);
+        deleteVacuumButton.setEnabled(true);
+        createVacuumButton.setEnabled(true);
+        saveResultsButton.setEnabled(true);
+        loadResultsButton.setEnabled(true);
+        moveVacuum = false;
+        gui.paintCleanSpots(s.getCleanSpots());
+    }
+    
     private void loadResultsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loadResultsButtonMouseClicked
         if (loadResultsButton.isEnabled()) {
             try {
@@ -721,11 +776,16 @@ public class HouseEditor extends javax.swing.JFrame {
     private javax.swing.JButton newHouseButton;
     private javax.swing.JLabel outputText;
     private javax.swing.JButton pauseVacuumButton;
+    private javax.swing.JLabel remainingBatteryText;
     private javax.swing.JButton saveHouseButton;
     private javax.swing.JTextField saveHouseField;
     private javax.swing.JButton saveResultsButton;
     private javax.swing.JTextField saveResultsField;
+    private javax.swing.ButtonGroup selectSpeedGroup;
     private javax.swing.JButton startVacuumButton;
     private javax.swing.JButton stopVacuumButton;
+    private javax.swing.JRadioButton x1SpeedButton;
+    private javax.swing.JRadioButton x50SpeedButton;
+    private javax.swing.JRadioButton x5SpeedButton;
     // End of variables declaration//GEN-END:variables
 }
