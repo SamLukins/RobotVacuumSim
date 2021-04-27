@@ -1,19 +1,18 @@
 package robotvacuum.collision;
 
 import robotvacuum.house.House;
-//import robotvacuum.house.furniture.Furniture;
 import robotvacuum.robot.ActualMovement;
 import robotvacuum.robot.ProposedMovement;
 import robotvacuum.robot.RobotVacuum;
 import robotvacuum.robot.VacuumStrategy;
 import robotvacuum.utility.MathHelper;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.io.Serializable;
 
 /**
  * @author SamL
@@ -201,6 +200,8 @@ public class CollisionDetector implements Serializable {
 
         //check every centimeter for a collision
         double initialCheckResolution = 0.01;
+        //millimeter finalCheckResolution
+        double finalCheckResolution = 0.001;
         for (double travelDistance = initialCheckResolution;
              travelDistance <= proposedMovement.getMov().totalTravelDistance();
              travelDistance += initialCheckResolution) {
@@ -210,20 +211,39 @@ public class CollisionDetector implements Serializable {
 
             //if there is a collision
             if (!testCollisions.isEmpty()) {
-                //get a more accurate collision
-                //millimeter resolution
-                double resolution = 0.001;
 
+                //get a more accurate collision
                 MovementCollisions finalCollision = binarySearchDynamicCollision(
                         ctd1, ctds, proposedMovement, travelDistance - initialCheckResolution, travelDistance,
-                        testCollisions, resolution);
+                        testCollisions, finalCheckResolution);
 
                 //create and return the actual resulting movement to the collision
                 return new ActualMovement(
                         proposedMovement,
-                        Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getCollisionDistance())),
+                        Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getNoCollisionDistance())),
                         finalCollision.getCollisions());
             }
+        }
+
+        Set<Collision> testCollisions = detectStaticCollision(
+                new CollisionTestData<CollisionShape>(proposedMovement.getMov().getStopPos(), ctd1.getcShape()),
+                ctds);
+
+        //if there is a collision
+            final double fullDistance = proposedMovement.getMov().totalTravelDistance();
+            final double noCollisionDistance = fullDistance - (fullDistance % initialCheckResolution);
+        if (!testCollisions.isEmpty()) {
+
+            //get a more accurate collision
+            MovementCollisions finalCollision = binarySearchDynamicCollision(
+                    ctd1, ctds, proposedMovement, noCollisionDistance, fullDistance,
+                    testCollisions, finalCheckResolution);
+
+            //create and return the actual resulting movement to the collision
+            return new ActualMovement(
+                    proposedMovement,
+                    Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getNoCollisionDistance())),
+                    finalCollision.getCollisions());
         }
 
         //no collision detected, so the actual movement is the entire proposed movement
@@ -278,7 +298,7 @@ public class CollisionDetector implements Serializable {
             //recursive exit condition
             double potentialMovement = (halfway - startOffset) / 2;
             if (potentialMovement < resolution) {
-                return new MovementCollisions(collisions, distanceToCollision);
+                return new MovementCollisions(collisions, distanceToCollision, distanceToNoCollision);
             }
 
             Set<Collision> halfwayCollisions =

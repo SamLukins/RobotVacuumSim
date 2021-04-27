@@ -42,7 +42,8 @@ public class HouseEditor extends javax.swing.JFrame {
                     cleanPercentText.setText("Percent cleaned: " + (int)s.getCleanPercent() + "%");
                     gui.redoVacuum(s.getVacuumShape());
                     try {
-                        Thread.sleep(sleepTime);
+                        int defaultSpeed = 5;
+                        Thread.sleep(sleepTime/ defaultSpeed);
 //                        Thread.sleep(100);
 //                    Thread.sleep(distance/s.);
                     } catch (InterruptedException e) {
