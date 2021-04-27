@@ -39,7 +39,8 @@ public class HouseEditor extends javax.swing.JFrame {
                     long sleepTime = s.movement();
                     gui.redoWithVacuum(h.getWalls(), h.getChests(), h.getTableLegs(), s.getVacuumShape());
                     try {
-                        Thread.sleep(sleepTime);
+                        int defaultSpeed = 5;
+                        Thread.sleep(sleepTime/ defaultSpeed);
 //                        Thread.sleep(100);
 //                    Thread.sleep(distance/s.);
                     } catch (InterruptedException e) {
