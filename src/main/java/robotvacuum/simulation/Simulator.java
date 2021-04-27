@@ -1,26 +1,18 @@
 package robotvacuum.simulation;
 
-import robotvacuum.collision.Collision;
-import robotvacuum.collision.CollisionCircle;
-import robotvacuum.collision.CollisionDetector;
-import robotvacuum.collision.Position;
-import robotvacuum.house.FlooringType;
-import robotvacuum.house.House;
-import robotvacuum.house.HouseManager;
-import robotvacuum.robot.ActualMovement;
-import robotvacuum.robot.ProposedMovement;
-import robotvacuum.robot.RandomVacuumStrategy;
-import robotvacuum.robot.RobotSimulationState;
-import robotvacuum.robot.RobotVacuum;
-import robotvacuum.robot.RobotVacuumProperties;
-import robotvacuum.robot.VacuumStrategy;
+import robotvacuum.collision.*;
+import robotvacuum.house.*;
+import robotvacuum.house.furniture.*;
+import robotvacuum.robot.*;
 
 import java.awt.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
+import java.io.Serializable;
 
-public class Simulator {
+public class Simulator implements Serializable {
     //**********************
     //test code - not final
     //**********************
@@ -29,27 +21,34 @@ public class Simulator {
     RobotVacuumProperties robotProperties;
     RobotVacuum<? extends VacuumStrategy> rv;
     Collection<Collision> previousCollisions;
+    
+    //test for cleaning area
+    Map<Position, Double> cleanlinessMap;
+    double totalArea, totalCleanableArea, totalCleanedArea, cleanPercent;
+    Position previousPosition;
 
     public Simulator(House h, Position pos, int batteryLife, int vacuumEfficiency,
                      int whiskerEfficiency, int vacuumSpeed, int algorithmCode) {
+        double ve = ((double)vacuumEfficiency)/100;
+        double we = ((double)whiskerEfficiency)/100;
         robotProperties = new RobotVacuumProperties(
                 new CollisionCircle(0.33),
                 0.15,
                 Map.of(
-                        FlooringType.HARD, 0.9,
-                        FlooringType.CUT, 0.75,
-                        FlooringType.LOOP, 0.7,
-                        FlooringType.FRIEZE, 0.65
+                        FlooringType.HARD, ve,
+                        FlooringType.CUT, ve,
+                        FlooringType.LOOP, ve,
+                        FlooringType.FRIEZE, ve
                 ),
                 0.34,
                 Map.of(
-                        FlooringType.HARD, 0.3,
-                        FlooringType.CUT, 0.3,
-                        FlooringType.LOOP, 0.3,
-                        FlooringType.FRIEZE, 0.3
+                        FlooringType.HARD, we,
+                        FlooringType.CUT, we,
+                        FlooringType.LOOP, we,
+                        FlooringType.FRIEZE, we
                 ),
                 ((double) vacuumSpeed) / 100,
-                150
+                batteryLife
         );
         rv = new RobotVacuum<>(
                 robotProperties,
@@ -58,11 +57,40 @@ public class Simulator {
                         0,
                         batteryLife
                 ),
-                new RandomVacuumStrategy(100, ((double) vacuumSpeed) / 1000, 0) //change to different strategy based on algorithm code
+                new RandomVacuumStrategy((int)(Math.random()*100), ((double) vacuumSpeed) / 1000, 0) //change to different strategy based on algorithm code
         );
         this.h = h;
         previousCollisions = Collections.emptySet();
         cd = new CollisionDetector();
+        
+        //test cleaning area
+        totalArea = h.getHouseWidth()*h.getHouseHeight();
+        totalCleanableArea = totalArea;
+        for (Room r : h.getRooms().values()) {
+            for (Wall w : r.getWalls().values()) {
+                totalCleanableArea -= (w.getcRect().getWidth()*w.getcRect().getHeight());
+            }
+            for (Furniture f : r.getAllFurniture()) {
+                if (f instanceof Chest) {
+                    totalCleanableArea -= (((Chest) f).getcData().getcShape().getWidth()*((Chest) f).getcData().getcShape().getHeight());
+                }
+                else if (f instanceof Table) {
+                    for (Leg l : ((Table) f).getLegs().values()) {
+                        CollisionShape tempShape = l.getcShape();
+                        totalCleanableArea -= ((CollisionCircle) tempShape).getRadius()*Math.PI*2;
+                    }
+                }
+            }
+        }
+        totalCleanedArea = 0;
+        cleanPercent = 0;
+        cleanlinessMap = new HashMap<>();
+        for (int i = 0; i < h.getHouseWidth()*2; i++) {
+            for (int j = 0; j < h.getHouseHeight()*2; j++) {
+                cleanlinessMap.put(new Position(i, j), 0.0);
+            }
+        }
+        previousPosition = null;
     }
 
     public long movement() {
@@ -70,6 +98,26 @@ public class Simulator {
         ActualMovement actualMovement = cd.detectDynamicCollision(rv, h, proposedVacuumMovement);
         previousCollisions = actualMovement.getCollisions();
         rv.getrSimState().updatePosition(actualMovement);
+        
+        //test cleaning area
+        int tempX = (int)(rv.getrSimState().getPosition().getX()*2);
+        int tempY = (int)(rv.getrSimState().getPosition().getY()*2);
+        if (!(new Position(tempX, tempY)).equals(previousPosition)) {    
+            for (Position p : cleanlinessMap.keySet()) {
+                if (p.equals(new Position(tempX, tempY))) {
+                    double value = cleanlinessMap.get(p);
+                    value += rv.getProperties().getVacuumEfficiency().get(h.getFloorCovering());
+                    if (value > 1) {
+                        value = 1;
+                    }
+                    double amountCleaned = value - cleanlinessMap.get(p);
+                    totalCleanedArea += amountCleaned * 0.25;
+                    cleanPercent = (totalCleanedArea / totalCleanableArea) * 100;
+                    cleanlinessMap.put(p, value);
+                    previousPosition = p;
+                }
+            }
+        }
 
         if (actualMovement.getMovement().isPresent()) {
             return Math.round(Math.floor((actualMovement.getMovement().get().totalTravelDistance() / rv.getProperties().getSpeed()) * 1000));
@@ -91,5 +139,37 @@ public class Simulator {
 
     public RobotVacuum<? extends VacuumStrategy> getVacuum() {
         return rv;
+    }
+    
+    public double getTotalArea() {
+        return totalArea;
+    }
+    
+    public double getCleanableArea() {
+        return totalCleanableArea;
+    }
+    
+    public double getCleanedArea() {
+        return totalCleanedArea;
+    }
+    
+    public double getCleanPercent() {
+        return cleanPercent;
+    }
+    
+    public Map<Position, Double> getCleanlinessMap() {
+        return cleanlinessMap;
+    }
+    
+    public Map<Rectangle, Double> getCleanSpots() {
+        Map<Rectangle, Double> cleanSpots = new HashMap<>();
+        for (Position p : cleanlinessMap.keySet()) {
+            cleanSpots.put(new Rectangle((int)((p.getX()/2)*HouseManager.SCALE_FACTOR), (int)((p.getY()/2)*HouseManager.SCALE_FACTOR), (int)HouseManager.SCALE_FACTOR/2, (int)HouseManager.SCALE_FACTOR/2), cleanlinessMap.get(p));
+        }
+        return cleanSpots;
+    }
+    
+    public House getHouse() {
+        return h;
     }
 }

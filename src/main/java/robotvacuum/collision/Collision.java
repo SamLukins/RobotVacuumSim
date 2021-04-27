@@ -1,9 +1,11 @@
 package robotvacuum.collision;
 
+import java.io.Serializable;
+
 /**
  * @author SamL
  */
-public class Collision {
+public class Collision implements Serializable {
 
     private final Position collisionPosition;
     /**

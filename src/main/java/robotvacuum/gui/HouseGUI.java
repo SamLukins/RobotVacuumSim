@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 //import java.util.ArrayList;
 import java.util.List;
-import java.awt.Rectangle;
+import java.util.Map;
 
 /**
  *
@@ -19,6 +19,7 @@ public class HouseGUI extends Frame {
     //private final boolean flag=true;
     
     List<Rectangle> wallRects, chestRects, tableLegs;
+    Map<Rectangle, Double> cleanSpots;
     int floorCode, houseWidth, houseHeight;
     Rectangle vacuum;
     
@@ -31,6 +32,7 @@ public class HouseGUI extends Frame {
         this.floorCode = floorCode;
         this.houseWidth = houseWidth;
         this.houseHeight = houseHeight;
+        cleanSpots = null;
         vacuum = null;
         
         setSize(BLOCK_SIZE*COL, BLOCK_SIZE*ROW);
@@ -52,6 +54,7 @@ public class HouseGUI extends Frame {
         this.wallRects = wallRects;
         this.chestRects = chestRects;
         this.tableLegs = tableLegs;
+        cleanSpots = null;
         repaint();
     }
     
@@ -64,16 +67,20 @@ public class HouseGUI extends Frame {
         this.floorCode = floorCode;
         this.houseWidth = houseWidth;
         this.houseHeight = houseHeight;
+        cleanSpots = null;
         repaint();
     }
     
-    public void redoWithVacuum(List<Rectangle> wallRects, List<Rectangle> chestRects, 
-            List<Rectangle> tableLegs, Rectangle vacuum) 
-    {
-        this.wallRects = wallRects;
-        this.chestRects = chestRects;
-        this.tableLegs = tableLegs;
+    public void redoVacuum(Rectangle vacuum) {
         this.vacuum = vacuum;
+        //cleanSpots = null;
+        if (vacuum != null) {
+            repaint((vacuum.x*BLOCK_SIZE)+MIN_X-5, (vacuum.y*BLOCK_SIZE)+MIN_Y-5, vacuum.width*BLOCK_SIZE+10, vacuum.height*BLOCK_SIZE+10);
+        }
+    }
+    
+    public void paintCleanSpots(Map<Rectangle, Double> cleanSpots) {
+        this.cleanSpots = cleanSpots;
         repaint();
     }
 
@@ -148,6 +155,16 @@ public class HouseGUI extends Frame {
         g.setColor(new Color(125, 65, 50));
         for (Rectangle r : tableLegs) {
             g.fillOval((r.x*BLOCK_SIZE)+MIN_X, (r.y*BLOCK_SIZE)+MIN_Y, r.width*BLOCK_SIZE, r.height*BLOCK_SIZE);
+        }
+        
+        //clean spots
+        if (cleanSpots != null) {
+            for (Rectangle r : cleanSpots.keySet()) {
+                if (cleanSpots.get(r) > 0) {
+                    g.setColor(new Color(0, 255, 0, (int)(255*cleanSpots.get(r))));
+                    g.fillRect((r.x*BLOCK_SIZE)+MIN_X, (r.y*BLOCK_SIZE)+MIN_Y, r.width*BLOCK_SIZE, r.height*BLOCK_SIZE);
+                }
+            }
         }
         
         //vacuum

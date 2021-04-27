@@ -29,15 +29,38 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="outputText" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component id="createVacuumButton" min="-2" pref="110" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="startVacuumButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="stopVacuumButton" min="-2" pref="97" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="createVacuumButton" pref="118" max="32767" attributes="0"/>
+                                  <Component id="deleteVacuumButton" max="32767" attributes="0"/>
+                                  <Component id="loadResultsButton" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="saveResultsButton" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="startVacuumButton" min="-2" pref="118" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="pauseVacuumButton" min="-2" pref="118" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="loadResultsField" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="stopVacuumButton" alignment="0" pref="118" max="32767" attributes="0"/>
+                                      <Component id="saveResultsField" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="cleanableAreaText" min="-2" pref="165" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cleanPercentText" min="-2" pref="165" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="outputText" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -53,9 +76,31 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="createVacuumButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="startVacuumButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="stopVacuumButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="pauseVacuumButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="26" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="stopVacuumButton" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="deleteVacuumButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="loadResultsButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="loadResultsField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="saveResultsField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="saveResultsButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="cleanableAreaText" min="-2" pref="18" max="-2" attributes="0"/>
+                  <Component id="cleanPercentText" min="-2" pref="18" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
               <Component id="outputText" min="-2" pref="15" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -272,6 +317,28 @@
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="startVacuumButtonMouseClicked"/>
       </Events>
     </Component>
+    <Component class="javax.swing.JButton" name="pauseVacuumButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Pause vacuum"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="pauseVacuumButtonMouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="deleteVacuumButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Delete vacuum"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="deleteVacuumButtonMouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="cleanableAreaText">
+    </Component>
+    <Component class="javax.swing.JLabel" name="cleanPercentText">
+    </Component>
     <Component class="javax.swing.JButton" name="stopVacuumButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Stop vacuum"/>
@@ -280,6 +347,28 @@
       <Events>
         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="stopVacuumButtonMouseClicked"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="loadResultsButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Load results"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="loadResultsButtonMouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="saveResultsButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Save results"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="saveResultsButtonMouseClicked"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="loadResultsField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="saveResultsField">
     </Component>
   </SubComponents>
 </Form>

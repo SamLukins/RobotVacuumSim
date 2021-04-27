@@ -2,10 +2,12 @@ package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
 
+import java.io.Serializable;
+
 /**
  * @author SamL
  */
-public class RobotSimulationState {
+public class RobotSimulationState implements Serializable {
 
     private Position position;
     private double facingDirection;

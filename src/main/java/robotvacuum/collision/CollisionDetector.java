@@ -7,6 +7,7 @@ import robotvacuum.robot.RobotVacuum;
 import robotvacuum.robot.VacuumStrategy;
 import robotvacuum.utility.MathHelper;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * @author SamL
  */
-public class CollisionDetector {
+public class CollisionDetector implements Serializable {
 
     private final MathHelper mathHelper;
 

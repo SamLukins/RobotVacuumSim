@@ -1,9 +1,11 @@
 package robotvacuum.robot;
 
+import java.io.Serializable;
+
 /**
  * @author SamL
  */
-public class RobotVacuum<T extends VacuumStrategy> {
+public class RobotVacuum<T extends VacuumStrategy> implements Serializable {
 
     private final RobotVacuumProperties properties;
     private final RobotSimulationState rSimState;
