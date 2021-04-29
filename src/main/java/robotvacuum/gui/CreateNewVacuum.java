@@ -247,6 +247,16 @@ public class CreateNewVacuum extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_cancelButtonMouseClicked
     
+    public void setVacuumEfficiency(int floorCode) {
+        switch (floorCode) {
+            case 1: vacuumEfficiencySlider.setValue(90); break;
+            case 2: vacuumEfficiencySlider.setValue(75); break;
+            case 3: vacuumEfficiencySlider.setValue(70); break;
+            case 4: vacuumEfficiencySlider.setValue(65); break;
+            default: vacuumEfficiencySlider.setValue(90); break;
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */

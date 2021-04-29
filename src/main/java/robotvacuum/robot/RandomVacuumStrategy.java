@@ -29,6 +29,7 @@ public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
     @Override
     public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions) {
         if (previousCollisions.isEmpty()) {
+            rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),
@@ -45,6 +46,7 @@ public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
 
             this.previousDirection = direction;
 
+            rSimState.setFacingDirection(direction);
             return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),

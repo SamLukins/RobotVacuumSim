@@ -20,23 +20,26 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
     public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions) {
         if (previousCollisions.isEmpty() && nextToWall) {
             movedNextToWall = movedNextToWall + defaultVacuumDistance;
-            if (movedNextToWall >= 0.66) {
+            if (movedNextToWall >= 0.25) {
                 //moved a distance equal to the vacuum's diameter, move across room again
                 double direction = nextDirection;
                 previousDirection = direction;
                 nextToWall = false;
                 movedNextToWall = 0;
                 
+                rSimState.setFacingDirection(direction);
                 return new ProposedMovement(
                         new MovementLineSegment(
                                 rSimState.getPosition(),
                                 rSimState.getPosition().offsetPositionPolar(direction, defaultVacuumDistance)));
             }
+            rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),
                             rSimState.getPosition().offsetPositionPolar(previousDirection, defaultVacuumDistance)));
         } else if (previousCollisions.isEmpty() && !nextToWall) {
+            rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),
@@ -48,6 +51,7 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
             nextDirection = collisionDirection - (4*Math.PI)/6;
             previousDirection = direction;
             
+            rSimState.setFacingDirection(direction);
             return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),
@@ -64,6 +68,7 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
             previousDirection = direction;
             nextToWall = true;
             
+            rSimState.setFacingDirection(direction);
             return new ProposedMovement(
                     new MovementLineSegment(
                             rSimState.getPosition(),

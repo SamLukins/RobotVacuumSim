@@ -2,10 +2,7 @@ package robotvacuum.gui;
 
 import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
-import robotvacuum.house.House;
-import robotvacuum.house.HouseManager;
-import robotvacuum.house.Room;
-import robotvacuum.house.Wall;
+import robotvacuum.house.*;
 import robotvacuum.simulation.Simulator;
 
 import javax.swing.*;
@@ -594,6 +591,13 @@ public class HouseEditor extends javax.swing.JFrame {
     private void createVacuumButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createVacuumButtonMouseClicked
         if (createVacuumButton.isEnabled()) {
             CreateNewVacuum c = new CreateNewVacuum(this, true);
+            switch (h.getHouse().getFloorCovering()) {
+                case HARD: c.setVacuumEfficiency(1); break;
+                case LOOP: c.setVacuumEfficiency(2); break;
+                case CUT: c.setVacuumEfficiency(3); break;
+                case FRIEZE: c.setVacuumEfficiency(4); break;
+                default: c.setVacuumEfficiency(1); break;
+            }
             c.setVisible(true);
             if (c.create) {
                 s = new Simulator(h.getHouse(), new Position(c.x, c.y), c.batteryLife, c.vacuumEfficiency, c.whiskerEfficiency, c.vacuumSpeed, c.algorithmCode);
