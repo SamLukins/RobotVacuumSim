@@ -66,8 +66,6 @@ public class Position implements Serializable {
         return new Position(xPos, yPos);
     }
 
-
-
     /**
      * @param pos position to get the difference from
      * @return The difference in x value from pos x to this x
