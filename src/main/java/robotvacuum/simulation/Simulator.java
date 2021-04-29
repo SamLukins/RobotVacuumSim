@@ -50,6 +50,13 @@ public class Simulator implements Serializable {
                 ((double) vacuumSpeed) / 100,
                 batteryLife
         );
+        VacuumStrategy vs;
+        if (algorithmCode == 3) {
+            vs = new SnakeVacuumStrategy(((double) vacuumSpeed) / 1000, Math.PI/6);
+        }
+        else {
+            vs = new RandomVacuumStrategy(100, ((double) vacuumSpeed) / 1000, 2*Math.PI*Math.random());
+        }
         rv = new RobotVacuum<>(
                 robotProperties,
                 new RobotSimulationState(
@@ -57,7 +64,7 @@ public class Simulator implements Serializable {
                         0,
                         batteryLife
                 ),
-                new RandomVacuumStrategy((int)(Math.random()*100), ((double) vacuumSpeed) / 1000, 0) //change to different strategy based on algorithm code
+                vs
         );
         this.h = h;
         previousCollisions = Collections.emptySet();

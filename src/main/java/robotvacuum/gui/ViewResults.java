@@ -38,6 +38,7 @@ public class ViewResults extends javax.swing.JDialog {
         totalRuntimeText = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Results");
 
         pathingAlgorithmText.setText("Pathing Algorithm: ");
 
@@ -129,6 +130,9 @@ public class ViewResults extends javax.swing.JDialog {
         VacuumStrategy v = s.getVacuum().getVacuumStrategy();
         if (v instanceof RandomVacuumStrategy) {
             pathingAlgorithmText.setText("Pathing Algorithm: Random");
+        }
+        else if (v instanceof SnakeVacuumStrategy) {
+            pathingAlgorithmText.setText("Pathing Algorithm: Snake");
         }
         //other strategies when they're added
         
