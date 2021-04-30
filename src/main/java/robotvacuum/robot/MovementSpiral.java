@@ -5,7 +5,9 @@ import robotvacuum.utility.MathHelper;
 
 public class MovementSpiral implements Movement {
 
-    private final Position startPos;
+    //    private final Position startPos;
+    private final double referenceAngle;
+    private final double startAngle;
     private final Position spiralCenter;
     private final double linearOffsetPerRotation;
     private final double totalRotation;
@@ -14,26 +16,47 @@ public class MovementSpiral implements Movement {
     private final double totalTravelDistance;
     private final MathHelper mathHelper;
 
-    public MovementSpiral(final Position startPos, final Position spiralCenter, final double totalRotation,
-                          final double linearOffsetPerRotation, final CircleDirection circleDirection) {
-        this(startPos, spiralCenter, totalRotation, linearOffsetPerRotation, circleDirection, new MathHelper());
+    public MovementSpiral(final double referenceAngle, final double startAngle, final double startingDistanceFromCenter,
+                          final Position spiralCenter, final double totalRotation, final double linearOffsetPerRotation,
+                          final CircleDirection circleDirection) {
+        this(referenceAngle, startAngle, startingDistanceFromCenter, spiralCenter, totalRotation,
+                linearOffsetPerRotation, circleDirection, new MathHelper());
     }
 
-    public MovementSpiral(final Position startPos, final Position spiralCenter, final double totalRotation,
-                          final double linearOffsetPerRotation, final CircleDirection circleDirection, MathHelper mathHelper) {
-        this.startPos = startPos;
+    public MovementSpiral(final double referenceAngle, final double startAngle, final double startingDistanceFromCenter,
+                          final Position spiralCenter, final double totalRotation, final double linearOffsetPerRotation,
+                          final CircleDirection circleDirection, MathHelper mathHelper) {
+        if (startAngle < referenceAngle) {
+            throw new IllegalArgumentException("start angle cannot be less than reference angle");
+        }
+        this.referenceAngle = referenceAngle;
+        this.startAngle = startAngle;
         this.spiralCenter = spiralCenter;
         this.linearOffsetPerRotation = linearOffsetPerRotation;
         this.totalRotation = totalRotation;
         this.circleDirection = circleDirection;
-        this.startingDistanceFromCenter = spiralCenter.distanceTo(startPos);
+        this.startingDistanceFromCenter = startingDistanceFromCenter;
         this.mathHelper = mathHelper;
 
-        //wikipedia algorithm for arc length of archimedean spiral
-        //https://en.wikipedia.org/wiki/Archimedean_spiral
-        final double a = spiralCenter.distanceTo(startPos);
+        this.totalTravelDistance = arcLengthWithOffset(startAngle, totalRotation, startingDistanceFromCenter);
+    }
+
+    private double arcLengthWithOffset(double startAngle, double totalRotation, double a) {
+        return arcLengthZeroOffset(totalRotation + startAngle, a) - arcLengthZeroOffset(startAngle, a);
+    }
+
+    /**
+     * wikipedia algorithm for arc length of archimedean spiral
+     * https://en.wikipedia.org/wiki/Archimedean_spiral
+     *
+     * @param totalRotation degrees to turn from start
+     * @param a
+     * @return
+     */
+    private double arcLengthZeroOffset(double totalRotation, double a) {
+        final double totalTravelDistance;
         double subValue = Math.sqrt(1 + (totalRotation * totalRotation));
-        this.totalTravelDistance = (a / 2) * (totalRotation * subValue + Math.log(totalRotation + subValue));
+        return (a / 2) * (totalRotation * subValue + Math.log(totalRotation + subValue));
     }
 
 
@@ -47,8 +70,9 @@ public class MovementSpiral implements Movement {
         if (!(0 <= percent && percent <= 1)) {
             throw new IllegalArgumentException("Percent out of bounds. Value: " + percent);
         }
-        return spiralCenter.offsetPositionPolar(totalRotation * percent + getStartAngle(),
-                totalRotation * percent * linearOffsetPerRotation);
+        double finalAngle = (totalRotation * percent) + startAngle - referenceAngle;
+        return spiralCenter.offsetPositionPolar((totalRotation * percent) + startAngle,
+                startingDistanceFromCenter + (finalAngle * linearOffsetPerRotation));
     }
 
     /**
@@ -71,7 +95,8 @@ public class MovementSpiral implements Movement {
         if (!(0 <= percent && percent <= 1)) {
             throw new IllegalArgumentException("Percent out of bounds. Value: " + percent);
         }
-        return new MovementSpiral(startPos, spiralCenter, percent * totalRotation, linearOffsetPerRotation, circleDirection);
+        return new MovementSpiral(referenceAngle, startAngle, startingDistanceFromCenter, spiralCenter,
+                percent * totalRotation, linearOffsetPerRotation, circleDirection);
     }
 
     /**
@@ -94,7 +119,8 @@ public class MovementSpiral implements Movement {
 
     @Override
     public Position getStartPos() {
-        return startPos;
+        double angleDiff = startAngle - referenceAngle;
+        return spiralCenter.offsetPositionPolar(startAngle, startingDistanceFromCenter + (angleDiff * linearOffsetPerRotation));
     }
 
     @Override
@@ -104,15 +130,17 @@ public class MovementSpiral implements Movement {
 
     @Override
     public double getFinalFacingDirection() {
-        final double endRotation = totalRotation + getStartAngle();
         if (this.circleDirection == CircleDirection.CLOCKWISE) {
+            final double endRotation = totalRotation + startAngle - referenceAngle;
             return mathHelper.normalizeAngle(endRotation + (Math.PI / 2));
         } else {
+            final double endRotation = startAngle - referenceAngle - totalRotation;
             return mathHelper.normalizeAngle(endRotation - (Math.PI / 2));
         }
     }
 
-    private double getStartAngle() {
-        return spiralCenter.directionTo(startPos);
+    public MovementSpiral continueSpiral(double contiueAngle) {
+        return new MovementSpiral(referenceAngle, totalRotation + startAngle, startingDistanceFromCenter,
+                spiralCenter, contiueAngle, linearOffsetPerRotation, circleDirection);
     }
 }

@@ -5,6 +5,8 @@ import robotvacuum.collision.Collision;
 import robotvacuum.utility.MathHelper;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Random;
 import java.io.Serializable;
 
@@ -27,7 +29,12 @@ public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
     }
 
     @Override
-    public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions) {
+    public ProposedMovement vacuum(RobotSimulationState rSimState) {
+        Optional<ActualMovement> previousMovement = rSimState.getPreviousMovement();
+        Collection<Collision> previousCollisions = previousMovement
+                .map(actualMovement -> actualMovement.getCollisions())
+                .orElse(Collections.emptySet());
+
         if (previousCollisions.isEmpty()) {
             rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(

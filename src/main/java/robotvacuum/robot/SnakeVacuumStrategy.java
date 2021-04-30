@@ -4,6 +4,8 @@ import robotvacuum.collision.Collision;
 
 import java.util.Collection;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Optional;
 
 public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
 
@@ -17,7 +19,12 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
     }
     
     @Override
-    public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions) {
+    public ProposedMovement vacuum(RobotSimulationState rSimState) {
+        Optional<ActualMovement> previousMovement = rSimState.getPreviousMovement();
+        Collection<Collision> previousCollisions = previousMovement
+                .map(actualMovement -> actualMovement.getCollisions())
+                .orElse(Collections.emptySet());
+
         if (previousCollisions.isEmpty() && nextToWall) {
             movedNextToWall = movedNextToWall + defaultVacuumDistance;
             if (movedNextToWall >= 0.25) {

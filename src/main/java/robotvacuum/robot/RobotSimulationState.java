@@ -3,6 +3,7 @@ package robotvacuum.robot;
 import robotvacuum.collision.Position;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * @author SamL
@@ -12,6 +13,7 @@ public class RobotSimulationState implements Serializable {
     private Position position;
     private double facingDirection;
     private double remainingBattery;
+    private ActualMovement previousMovement = null;
 
     public RobotSimulationState(Position position, double facingDirection, double remainingBattery) {
         this.position = position;
@@ -24,10 +26,12 @@ public class RobotSimulationState implements Serializable {
             throw new IllegalArgumentException("movement does not start at current robot position");
         }
         this.position = mov.getStopPos();
+        this.facingDirection = mov.getFinalFacingDirection();
     }
 
     public void updatePosition(ActualMovement mov) {
         mov.getMovement().ifPresent(this::updatePosition);
+        this.previousMovement = mov;
     }
 
     /**
@@ -71,5 +75,7 @@ public class RobotSimulationState implements Serializable {
     public void setRemainingBattery(double remainingBattery) {
         this.remainingBattery = remainingBattery;
     }
+
+    public Optional<ActualMovement> getPreviousMovement() { return Optional.ofNullable(this.previousMovement); }
 
 }

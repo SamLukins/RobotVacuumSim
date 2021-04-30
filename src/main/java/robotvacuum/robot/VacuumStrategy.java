@@ -8,5 +8,5 @@ import java.util.Collection;
  * @author SamL
  */
 public interface VacuumStrategy {
-    public ProposedMovement vacuum(RobotSimulationState rSimState, Collection<Collision> previousCollisions);
+    public ProposedMovement vacuum(RobotSimulationState rSimState);
 }

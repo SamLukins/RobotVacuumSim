@@ -110,7 +110,7 @@ public class Position implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Position position = (Position) o;
 
-        return Double.compare(position.x, this.x) == 0 && Double.compare(position.y, this.y) == 0;
+        return (position.x - this.x) <= Math.ulp(position.x) && (position.y - this.y) <= Math.ulp(position.x);
     }
 
     @Override

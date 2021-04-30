@@ -76,7 +76,7 @@ class RobotVacuumIntegrationTest {
                 new RandomVacuumStrategy(defaultSeed, 3.0)
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
         assertEquals(0.0, proposedVacuumMovement.getMov().getStartPos().directionTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
         assertEquals(3.0, proposedVacuumMovement.getMov().getStartPos().distanceTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
@@ -105,7 +105,7 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
         assertEquals(0.0, proposedVacuumMovement.getMov().getStartPos().directionTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
         assertEquals(3.0, proposedVacuumMovement.getMov().getStartPos().distanceTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
@@ -144,7 +144,7 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
@@ -183,7 +183,7 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
@@ -222,7 +222,7 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
@@ -261,7 +261,7 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
         Movement mov = proposedVacuumMovement.getMov();
         assertEquals(Math.PI / 4, mov.getStartPos().directionTo(mov.getStopPos()));
@@ -275,9 +275,9 @@ class RobotVacuumIntegrationTest {
 
         Position stopPos = actualMovement.getMovement().orElseThrow().getStopPos();
 
-        assertEquals(root2, actualMovement.getMovement().get().totalTravelDistance(), 0.001);
-        assertEquals(6.0, stopPos.getX(), 0.001);
-        assertEquals(6.0, stopPos.getY(), 0.001);
+        assertEquals(root2, actualMovement.getMovement().get().totalTravelDistance(), 0.01);
+        assertEquals(6.0, stopPos.getX(), 0.01);
+        assertEquals(6.0, stopPos.getY(), 0.01);
     }
 
     @Test
@@ -302,7 +302,7 @@ class RobotVacuumIntegrationTest {
                 FlooringType.HARD
         );
 
-        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState(), Collections.emptySet());
+        ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
 
         CollisionDetector cd = new CollisionDetector();
@@ -314,7 +314,7 @@ class RobotVacuumIntegrationTest {
 
         rv.getrSimState().updatePosition(actualMovement);
 
-        ProposedMovement secondVacuum = rv.getVacuumStrategy().vacuum(rv.getrSimState(), collisions);
+        ProposedMovement secondVacuum = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         ActualMovement actualMovement2 = cd.detectDynamicCollision(rv, testHouse, secondVacuum);
 
         assertTrue(actualMovement2.getCollisions().isEmpty());

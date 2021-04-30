@@ -36,10 +36,10 @@ class CollisionDetectorDynamicTest {
 
         Movement movement = optMovement.orElseThrow();
         Collision collision = optCollision.orElseThrow();
-        assertEquals(2.0, movement.getStopPos().getX(), 0.00001);
-        assertEquals(1.0, movement.getStopPos().getY(), 0.00001);
-        assertEquals(3.0, collision.getCollisionPosition().getX(), 0.00001);
-        assertEquals(1.0, collision.getCollisionPosition().getY(), 0.00001);
+        assertEquals(2.0, movement.getStopPos().getX(), 0.01);
+        assertEquals(1.0, movement.getStopPos().getY(), 0.01);
+        assertEquals(3.0, collision.getCollisionPosition().getX(), 0.01);
+        assertEquals(1.0, collision.getCollisionPosition().getY(), 0.01);
     }
 
     private CollisionTestData<CollisionRectangle> generateMockCollisionRectangleTestData(double x, double y, double width, double height) {
