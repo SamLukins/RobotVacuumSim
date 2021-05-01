@@ -3,7 +3,9 @@ package robotvacuum.simulation;
 import robotvacuum.collision.CollisionCircle;
 import robotvacuum.collision.CollisionDetector;
 import robotvacuum.collision.CollisionShape;
+import robotvacuum.collision.CollisionTestData;
 import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 import robotvacuum.house.FlooringType;
 import robotvacuum.house.House;
 import robotvacuum.house.HouseManager;
@@ -29,6 +31,7 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class Simulator implements Serializable {
     House h;
@@ -78,8 +81,7 @@ public class Simulator implements Serializable {
         rv = new RobotVacuum<>(
                 robotProperties,
                 new RobotSimulationState(
-                        pos,
-                        0,
+                        new PositionWithRotation(pos, 0),
                         batteryLife
                 ),
                 vs
@@ -89,22 +91,18 @@ public class Simulator implements Serializable {
         mh = new MathHelper();
 
         totalArea = h.getHouseWidth() * h.getHouseHeight();
-        totalCleanableArea = totalArea;
-        for (Room r : h.getRooms().values()) {
-            for (Wall w : r.getWalls().values()) {
-                totalCleanableArea -= (w.getcRect().getWidth() * w.getcRect().getHeight());
-            }
-            for (Furniture f : r.getAllFurniture()) {
-                if (f instanceof Chest) {
-                    totalCleanableArea -= (((Chest) f).getcData().getcShape().getWidth() * ((Chest) f).getcData().getcShape().getHeight());
-                } else if (f instanceof Table) {
-                    for (Leg l : ((Table) f).getLegs().values()) {
-                        CollisionShape tempShape = l.getcShape();
-                        totalCleanableArea -= ((CollisionCircle) tempShape).getRadius() * Math.PI * 2;
-                    }
-                }
-            }
-        }
+
+        double nonCleanableArea =
+                h.getRooms().values().stream().flatMap(r -> {
+            return Stream.concat(
+                    r.getWalls().values().stream().map(Wall::getcRect),
+                    r.getAllFurniture().stream()
+                            .flatMap(furniture -> furniture.getCollisionTestData().stream())
+                            .map(CollisionTestData::getcShape));
+        }).mapToDouble(CollisionShape::getArea).sum();
+
+        totalCleanableArea = totalArea - nonCleanableArea;
+
         totalCleanedArea = 0;
         cleanPercent = 0;
         cleanlinessMap = new HashMap<>();
@@ -120,14 +118,15 @@ public class Simulator implements Serializable {
         ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         ActualMovement actualMovement = cd.detectDynamicCollision(rv, h, proposedVacuumMovement);
         try {
-            rv.getrSimState().updatePosition(actualMovement);
+            rv.getrSimState().updateMovement(actualMovement);
         } catch (RuntimeException e) {
             throw e;
         }
         actualMovement.getMovement().ifPresent(movementHistory::addMovement);
 
-        int tempX = (int) (rv.getrSimState().getPosition().getX() * CLEAN_SPOT_SIZE);
-        int tempY = (int) (rv.getrSimState().getPosition().getY() * CLEAN_SPOT_SIZE);
+        Position pos = rv.getrSimState().getPositionWithRotation().getPos();
+        int tempX = (int) (pos.getX() * CLEAN_SPOT_SIZE);
+        int tempY = (int) (pos.getY() * CLEAN_SPOT_SIZE);
         Position tempPos = new Position(tempX, tempY);
         if (!tempPos.equals(previousPosition)) {
             for (Position p : cleanlinessMap.keySet()) {
@@ -138,7 +137,7 @@ public class Simulator implements Serializable {
         if (actualMovement.getMovement().isPresent()) {
             return Math.round(Math.floor((actualMovement.getMovement().get().totalTravelDistance() / rv.getProperties().getSpeed()) * 1000));
         } else {
-            throw new RuntimeException("Stuck!");
+            return 0;
         }
     }
 
@@ -146,10 +145,12 @@ public class Simulator implements Serializable {
     //but the gui makes circles using rectangular bounds, so conversion is necessary
     public Rectangle getVacuumShape() {
         double tempX, tempY, tempWidth, tempHeight;
-        tempX = (rv.getrSimState().getPosition().getX() - rv.getProperties().getcCircle().getRadius()) * HouseManager.SCALE_FACTOR;
-        tempY = (rv.getrSimState().getPosition().getY() - rv.getProperties().getcCircle().getRadius()) * HouseManager.SCALE_FACTOR;
-        tempWidth = rv.getProperties().getcCircle().getRadius() * 2 * HouseManager.SCALE_FACTOR;
-        tempHeight = rv.getProperties().getcCircle().getRadius() * 2 * HouseManager.SCALE_FACTOR;
+        Position pos = rv.getrSimState().getPositionWithRotation().getPos();
+        double radius = rv.getProperties().getcCircle().getRadius();
+        tempX = (pos.getX() - radius) * HouseManager.SCALE_FACTOR;
+        tempY = (pos.getY() - radius) * HouseManager.SCALE_FACTOR;
+        tempWidth = radius * 2 * HouseManager.SCALE_FACTOR;
+        tempHeight = radius * 2 * HouseManager.SCALE_FACTOR;
         return new Rectangle((int) tempX, (int) tempY, (int) tempWidth, (int) tempHeight);
     }
 
@@ -168,17 +169,18 @@ public class Simulator implements Serializable {
             cleanPercent = (totalCleanedArea / totalCleanableArea) * 100;
             cleanlinessMap.put(p, value);
             previousPosition = p;
-            ;
-            if ((mh.normalizeAngle(rv.getrSimState().getFacingDirection()) >= Math.PI / 8 && mh.normalizeAngle(rv.getrSimState().getFacingDirection()) <= (3 * Math.PI) / 8)
-                    || (mh.normalizeAngle(rv.getrSimState().getFacingDirection()) >= (-7 * Math.PI) / 8 && mh.normalizeAngle(rv.getrSimState().getFacingDirection()) <= (-5 * Math.PI) / 8)) {
+
+            double faceDir = rv.getrSimState().getPositionWithRotation().getRot();
+            if ((mh.normalizeAngle(faceDir) >= Math.PI / 8 && mh.normalizeAngle(faceDir) <= (3 * Math.PI) / 8)
+                    || (mh.normalizeAngle(faceDir) >= (-7 * Math.PI) / 8 && mh.normalizeAngle(faceDir) <= (-5 * Math.PI) / 8)) {
                 p1 = new Position(tempX + 1, tempY - 1);
                 p2 = new Position(tempX - 1, tempY + 1);
-            } else if ((mh.normalizeAngle(rv.getrSimState().getFacingDirection()) > (3 * Math.PI) / 8 && mh.normalizeAngle(rv.getrSimState().getFacingDirection()) < (5 * Math.PI) / 8)
-                    || (mh.normalizeAngle(rv.getrSimState().getFacingDirection()) > (-5 * Math.PI) / 8 && mh.normalizeAngle(rv.getrSimState().getFacingDirection()) <= (-3 * Math.PI) / 8)) {
+            } else if ((mh.normalizeAngle(faceDir) > (3 * Math.PI) / 8 && mh.normalizeAngle(faceDir) < (5 * Math.PI) / 8)
+                    || (mh.normalizeAngle(faceDir) > (-5 * Math.PI) / 8 && mh.normalizeAngle(faceDir) <= (-3 * Math.PI) / 8)) {
                 p1 = new Position(tempX + 1, tempY);
                 p2 = new Position(tempX - 1, tempY);
-            } else if ((mh.normalizeAngle(rv.getrSimState().getFacingDirection()) > (5 * Math.PI) / 8 && mh.normalizeAngle(rv.getrSimState().getFacingDirection()) < (7 * Math.PI) / 8)
-                    || (mh.normalizeAngle(rv.getrSimState().getFacingDirection()) > (-3 * Math.PI) / 8 && mh.normalizeAngle(rv.getrSimState().getFacingDirection()) <= -Math.PI / 8)) {
+            } else if ((mh.normalizeAngle(faceDir) > (5 * Math.PI) / 8 && mh.normalizeAngle(faceDir) < (7 * Math.PI) / 8)
+                    || (mh.normalizeAngle(faceDir) > (-3 * Math.PI) / 8 && mh.normalizeAngle(faceDir) <= -Math.PI / 8)) {
                 p1 = new Position(tempX + 1, tempY + 1);
                 p2 = new Position(tempX - 1, tempY - 1);
             } else {

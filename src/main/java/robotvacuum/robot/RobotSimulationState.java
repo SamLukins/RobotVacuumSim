@@ -1,6 +1,6 @@
 package robotvacuum.robot;
 
-import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -10,56 +10,66 @@ import java.util.Optional;
  */
 public class RobotSimulationState implements Serializable {
 
-    private Position position;
-    private double facingDirection;
+    private PositionWithRotation positionWithRotation;
     private double remainingBattery;
     private ActualMovement previousMovement = null;
+    private ActualMovement currentMovement = null;
+    private double distanceAlongMovement = 0.0;
 
-    public RobotSimulationState(Position position, double facingDirection, double remainingBattery) {
-        this.position = position;
-        this.facingDirection = facingDirection;
+    public RobotSimulationState(PositionWithRotation positionWithRotation, double remainingBattery) {
+        this.positionWithRotation = positionWithRotation;
         this.remainingBattery = remainingBattery;
     }
 
-    public void updatePosition(Movement mov) {
-        if (!mov.getStartPos().equals(this.position)) {
+    public void updatePosition(final Movement mov) {
+        if (!mov.fixedDistancePositionWithRotation(distanceAlongMovement).isCloseTo(this.positionWithRotation)) {
             throw new IllegalArgumentException("movement does not start at current robot position");
         }
-        this.position = mov.getStopPos();
-        this.facingDirection = mov.getFinalFacingDirection();
+        this.positionWithRotation = mov.getStopPosWithRotation();
+    }
+
+    public void updatePosition(final Movement mov, final double distanceToMove) {
+        if (!mov.fixedDistancePositionWithRotation(distanceAlongMovement).equals(this.positionWithRotation)) {
+            throw new IllegalArgumentException("movement does not start at current robot position");
+        }
+        if (distanceToMove <= 0.0) {
+            throw new IllegalArgumentException("must move forwards");
+        }
+        if (distanceToMove + distanceAlongMovement > mov.totalTravelDistance()) {
+            throw new IllegalArgumentException("cannot move past the end of the movement");
+        }
+        this.positionWithRotation = mov.fixedDistancePositionWithRotation(distanceToMove + distanceAlongMovement);
     }
 
     public void updatePosition(ActualMovement mov) {
         mov.getMovement().ifPresent(this::updatePosition);
+        this.currentMovement = null;
+        this.previousMovement = mov;
+    }
+
+    public void updateMovement(ActualMovement mov) {
+        this.currentMovement = mov;
+        this.updatePosition(mov);
+    }
+
+    public void updateMovement(ActualMovement mov, double distanceToMove) {
+        mov.getMovement().ifPresent(x -> this.updatePosition(x, distanceToMove));
+        this.currentMovement = null;
         this.previousMovement = mov;
     }
 
     /**
      * @return the position
      */
-    public Position getPosition() {
-        return position;
+    public PositionWithRotation getPositionWithRotation() {
+        return positionWithRotation;
     }
 
     /**
-     * @param position the position to set
+     * @param positionWithRotation the positionWithRotation to set
      */
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
-    /**
-     * @return the facingDirection
-     */
-    public double getFacingDirection() {
-        return facingDirection;
-    }
-
-    /**
-     * @param facingDirection the facingDirection to set
-     */
-    public void setFacingDirection(double facingDirection) {
-        this.facingDirection = facingDirection;
+    public void setPositionWithRotation(PositionWithRotation positionWithRotation) {
+        this.positionWithRotation = positionWithRotation;
     }
 
     /**

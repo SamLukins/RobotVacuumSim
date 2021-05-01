@@ -48,4 +48,8 @@ public class CollisionCircle extends CollisionShape {
         return radius;
     }
 
+    @Override
+    public double getArea() {
+        return Math.PI * this.radius * this.radius;
+    }
 }

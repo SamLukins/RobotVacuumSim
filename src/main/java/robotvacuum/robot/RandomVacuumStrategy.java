@@ -2,6 +2,7 @@ package robotvacuum.robot;
 
 
 import robotvacuum.collision.Collision;
+import robotvacuum.collision.Position;
 import robotvacuum.utility.MathHelper;
 
 import java.util.Collection;
@@ -14,7 +15,7 @@ public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
 
     private final double defaultVacuumDistance;
     private double previousDirection = 0.0;
-    private Random random;
+    private final Random random;
     private final MathHelper mathHelper;
 
     public RandomVacuumStrategy(long seed, double defaultVacuumDistance) {
@@ -32,15 +33,16 @@ public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
     public ProposedMovement vacuum(RobotSimulationState rSimState) {
         Optional<ActualMovement> previousMovement = rSimState.getPreviousMovement();
         Collection<Collision> previousCollisions = previousMovement
-                .map(actualMovement -> actualMovement.getCollisions())
+                .map(ActualMovement::getCollisions)
                 .orElse(Collections.emptySet());
 
+        Position pos = rSimState.getPositionWithRotation().getPos();
         if (previousCollisions.isEmpty()) {
-            rSimState.setFacingDirection(previousDirection);
+//            rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(
                     new MovementLineSegment(
-                            rSimState.getPosition(),
-                            rSimState.getPosition().offsetPositionPolar(previousDirection, defaultVacuumDistance)));
+                            pos,
+                            pos.offsetPositionPolar(previousDirection, defaultVacuumDistance)));
         } else {
             double minPossibleDirection =
                     previousCollisions.stream().mapToDouble(Collision::getCollisionDirection).map(x -> x + Math.PI / 2).max().getAsDouble();
@@ -53,11 +55,9 @@ public class RandomVacuumStrategy implements VacuumStrategy, Serializable {
 
             this.previousDirection = direction;
 
-            rSimState.setFacingDirection(direction);
+//            rSimState.setFacingDirection(direction);
             return new ProposedMovement(
-                    new MovementLineSegment(
-                            rSimState.getPosition(),
-                            rSimState.getPosition().offsetPositionPolar(direction, defaultVacuumDistance)));
+                    new MovementLineSegment(pos, pos.offsetPositionPolar(direction, defaultVacuumDistance)));
         }
     }
 

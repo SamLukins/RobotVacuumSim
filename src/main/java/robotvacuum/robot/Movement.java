@@ -1,6 +1,7 @@
 package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 
 /**
  * @author SamL
@@ -13,14 +14,14 @@ public interface Movement {
      * @return the position that is percent along the movement from the start
      * @throws IllegalArgumentException if the percent is less than 0 or greater than 1
      */
-    Position linearInterpolatedPosition(double percent);
+    PositionWithRotation linearInterpolatedPositionWithRotation(double percent);
 
     /**
      * @param distance distance from start position along movement in meters
      * @return the position distance from the start along the path
      * @throws IllegalArgumentException if the distance is greater than the total movement distance
      */
-    Position fixedDistancePosition(double distance);
+    PositionWithRotation fixedDistancePositionWithRotation(double distance);
 
     /**
      * @param percent percent of the original movement that the new movement will cover
@@ -42,6 +43,6 @@ public interface Movement {
     double totalTravelDistance();
 
     Position getStartPos();
-    Position getStopPos();
+    PositionWithRotation getStopPosWithRotation();
     double getFinalFacingDirection();
 }

@@ -1,6 +1,8 @@
 package robotvacuum.robot;
 
 import robotvacuum.collision.Collision;
+import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 
 import java.util.Collection;
 import java.io.Serializable;
@@ -25,6 +27,7 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
                 .map(actualMovement -> actualMovement.getCollisions())
                 .orElse(Collections.emptySet());
 
+        Position pos = rSimState.getPositionWithRotation().getPos();
         if (previousCollisions.isEmpty() && nextToWall) {
             movedNextToWall = movedNextToWall + defaultVacuumDistance;
             if (movedNextToWall >= 0.25) {
@@ -34,23 +37,23 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
                 nextToWall = false;
                 movedNextToWall = 0;
                 
-                rSimState.setFacingDirection(direction);
+//                rSimState.setFacingDirection(direction);
                 return new ProposedMovement(
                         new MovementLineSegment(
-                                rSimState.getPosition(),
-                                rSimState.getPosition().offsetPositionPolar(direction, defaultVacuumDistance)));
+                                pos,
+                                pos.offsetPositionPolar(direction, defaultVacuumDistance)));
             }
-            rSimState.setFacingDirection(previousDirection);
+//            rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(
                     new MovementLineSegment(
-                            rSimState.getPosition(),
-                            rSimState.getPosition().offsetPositionPolar(previousDirection, defaultVacuumDistance)));
+                            pos,
+                            pos.offsetPositionPolar(previousDirection, defaultVacuumDistance)));
         } else if (previousCollisions.isEmpty() && !nextToWall) {
-            rSimState.setFacingDirection(previousDirection);
+//            rSimState.setFacingDirection(previousDirection);
             return new ProposedMovement(
                     new MovementLineSegment(
-                            rSimState.getPosition(),
-                            rSimState.getPosition().offsetPositionPolar(previousDirection, defaultVacuumDistance)));
+                            pos,
+                            pos.offsetPositionPolar(previousDirection, defaultVacuumDistance)));
         } else if (nextToWall) {
             //reached corner, change direction
             movedNextToWall = 0;
@@ -58,11 +61,11 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
             nextDirection = collisionDirection - (4*Math.PI)/6;
             previousDirection = direction;
             
-            rSimState.setFacingDirection(direction);
+//            rSimState.setFacingDirection(direction);
             return new ProposedMovement(
                     new MovementLineSegment(
-                            rSimState.getPosition(),
-                            rSimState.getPosition().offsetPositionPolar(direction, defaultVacuumDistance)));
+                            pos,
+                            pos.offsetPositionPolar(direction, defaultVacuumDistance)));
         } else {
             //hit wall, travel along it for a bit
             collisionDirection = previousCollisions.stream().mapToDouble(Collision::getCollisionDirection).max().getAsDouble();
@@ -75,11 +78,11 @@ public class SnakeVacuumStrategy implements VacuumStrategy, Serializable {
             previousDirection = direction;
             nextToWall = true;
             
-            rSimState.setFacingDirection(direction);
+//            rSimState.setFacingDirection(direction);
             return new ProposedMovement(
                     new MovementLineSegment(
-                            rSimState.getPosition(),
-                            rSimState.getPosition().offsetPositionPolar(direction, defaultVacuumDistance)));
+                            pos,
+                            pos.offsetPositionPolar(direction, defaultVacuumDistance)));
         }
     }
 }

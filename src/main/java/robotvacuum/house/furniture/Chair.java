@@ -32,7 +32,7 @@ public class Chair implements Furniture, Serializable {
 
     @Override
     public Collection<CollisionTestData<? extends CollisionShape>> getCollisionTestData() {
-        return legs.entrySet().stream().map(e -> new CollisionTestData<CollisionShape>(e.getKey(), e.getValue().getcShape())).collect(Collectors.toSet());
+        return legs.entrySet().stream().map(e -> new CollisionTestData<>(e.getKey(), e.getValue().getcShape())).collect(Collectors.toSet());
     }
 
     @Override
@@ -54,9 +54,6 @@ public class Chair implements Furniture, Serializable {
             return false;
         }
         final Chair other = (Chair) obj;
-        if (!Objects.equals(this.legs, other.legs)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.legs, other.legs);
     }
 }

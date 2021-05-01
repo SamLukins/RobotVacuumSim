@@ -17,4 +17,5 @@ public abstract class CollisionShape implements Serializable {
         return shape;
     }
 
+    abstract public double getArea();
 }

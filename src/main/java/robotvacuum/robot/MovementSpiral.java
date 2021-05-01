@@ -1,6 +1,7 @@
 package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 import robotvacuum.utility.MathHelper;
 
 public class MovementSpiral implements Movement {
@@ -59,13 +60,6 @@ public class MovementSpiral implements Movement {
         return (a / 2) * (totalRotation * subValue + Math.log(totalRotation + subValue));
     }
 
-
-    /**
-     * @param percent the percent along the movement
-     * @return the position that is percent along the movement from the start
-     * @throws IllegalArgumentException if the percent is less than 0 or greater than 1
-     */
-    @Override
     public Position linearInterpolatedPosition(double percent) {
         if (!(0 <= percent && percent <= 1)) {
             throw new IllegalArgumentException("Percent out of bounds. Value: " + percent);
@@ -76,13 +70,31 @@ public class MovementSpiral implements Movement {
     }
 
     /**
+     * @param percent the percent along the movement
+     * @return the position that is percent along the movement from the start
+     * @throws IllegalArgumentException if the percent is less than 0 or greater than 1
+     */
+    @Override
+    public PositionWithRotation linearInterpolatedPositionWithRotation(double percent) {
+        if (!(0 <= percent && percent <= 1)) {
+            throw new IllegalArgumentException("Percent out of bounds. Value: " + percent);
+        }
+        Position pos = linearInterpolatedPosition(percent);
+        return new PositionWithRotation(pos, getFacingDirectionLinearInterpolated(pos, percent));
+    }
+
+    private Position fixedDistancePosition(double distance) {
+        return linearInterpolatedPosition(distance / totalTravelDistance());
+    }
+
+    /**
      * @param distance distance from start position along movement in meters
      * @return the position distance from the start along the path
      * @throws IllegalArgumentException if the distance is greater than the total movement distance
      */
     @Override
-    public Position fixedDistancePosition(double distance) {
-        return linearInterpolatedPosition(distance / totalTravelDistance());
+    public PositionWithRotation fixedDistancePositionWithRotation(double distance) {
+        return linearInterpolatedPositionWithRotation(distance / totalTravelDistance());
     }
 
     /**
@@ -124,8 +136,8 @@ public class MovementSpiral implements Movement {
     }
 
     @Override
-    public Position getStopPos() {
-        return linearInterpolatedPosition(1.0);
+    public PositionWithRotation getStopPosWithRotation() {
+        return linearInterpolatedPositionWithRotation(1.0);
     }
 
     @Override
@@ -139,8 +151,41 @@ public class MovementSpiral implements Movement {
         }
     }
 
-    public MovementSpiral continueSpiral(double contiueAngle) {
+    public MovementSpiral continueSpiral(double continueAngle) {
         return new MovementSpiral(referenceAngle, totalRotation + startAngle, startingDistanceFromCenter,
-                spiralCenter, contiueAngle, linearOffsetPerRotation, circleDirection);
+                spiralCenter, continueAngle, linearOffsetPerRotation, circleDirection);
+    }
+
+    public double getFacingDirectionFixedDistance(double distance) {
+        if (distance < 0) {
+            throw new IllegalArgumentException("distance cannot be less than 0");
+        } else if (distance > totalTravelDistance) {
+            throw new IllegalArgumentException("distance cannot be greater than the arcDistance");
+        }
+        double polarSlopeAngle = 1.0 / (startAngle + totalRotation);
+        Position position = fixedDistancePosition(distance);
+        double angle = this.spiralCenter.directionTo(position);
+
+        return angle + polarSlopeAngle;
+    }
+
+    public double getFacingDirectionLinearInterpolated(double percent) {
+        return getFacingDirectionFixedDistance(percent * totalTravelDistance);
+    }
+
+    private double getFacingDirectionFixedDistance(Position position, double distance) {
+        if (distance < 0) {
+            throw new IllegalArgumentException("distance cannot be less than 0");
+        } else if (distance > totalTravelDistance) {
+            throw new IllegalArgumentException("distance cannot be greater than the arcDistance");
+        }
+        double polarSlopeAngle = 1.0 / (startAngle + totalRotation);
+        double angle = this.spiralCenter.directionTo(position);
+
+        return angle + polarSlopeAngle;
+    }
+
+    private double getFacingDirectionLinearInterpolated(Position position, double percent) {
+        return getFacingDirectionFixedDistance(position, percent * totalTravelDistance);
     }
 }

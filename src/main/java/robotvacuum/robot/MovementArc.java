@@ -1,6 +1,7 @@
 package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 import robotvacuum.utility.MathHelper;
 
 public class MovementArc implements Movement {
@@ -24,14 +25,14 @@ public class MovementArc implements Movement {
     }
 
     @Override
-    public Position linearInterpolatedPosition(double percent) {
+    public PositionWithRotation linearInterpolatedPositionWithRotation(double percent) {
         //if negative or more than 100% throw exception
         if (percent < 0) {
             throw new IllegalArgumentException("percent cannot be less than 0");
         } else if (percent > 1) {
             throw new IllegalArgumentException("percent cannot be greater than 1");
         } else {
-            return fixedDistancePosition(arcDistance * percent);
+            return fixedDistancePositionWithRotation(arcDistance * percent);
         }
     }
 
@@ -41,7 +42,7 @@ public class MovementArc implements Movement {
      * @throws RuntimeException if the distance is greater than the total movement distance
      */
     @Override
-    public Position fixedDistancePosition(double distance) {
+    public PositionWithRotation fixedDistancePositionWithRotation(double distance) {
         if (distance < 0) {
             throw new IllegalArgumentException("distance cannot be less than 0");
         } else if (distance > arcDistance) {
@@ -52,7 +53,7 @@ public class MovementArc implements Movement {
             double angle = distance / radius;
 
             double finalAngle = startingAngle + angle;
-            return arcCenter.offsetPositionPolar(finalAngle, radius);
+            return new PositionWithRotation(arcCenter.offsetPositionPolar(finalAngle, radius), getFacingDirectionFixedDistance(distance));
 //            return new Position(arcCenter.getX() + Math.cos(finalAngle) * radius, arcCenter.getY() + Math.sin(finalAngle) * radius);
         }
     }
@@ -87,19 +88,8 @@ public class MovementArc implements Movement {
     }
 
     @Override
-    public Position getStopPos() {
-        double radius = startPos.distanceTo(arcCenter);
-        double startingAngle = arcCenter.directionTo(startPos);
-        double angle = arcDistance / radius;
-
-        double finalAngle;
-        if (this.circleDirection == CircleDirection.CLOCKWISE) {
-            finalAngle = startingAngle + angle;
-        } else {
-            finalAngle = startingAngle - angle;
-        }
-        finalAngle %= Math.PI;
-        return arcCenter.offsetPositionPolar(finalAngle, radius);
+    public PositionWithRotation getStopPosWithRotation() {
+        return linearInterpolatedPositionWithRotation(1.0);
     }
 
     /**
@@ -124,11 +114,22 @@ public class MovementArc implements Movement {
     }
 
     public double getFinalFacingDirection() {
-        if (this.circleDirection == CircleDirection.CLOCKWISE) {
-            return mathHelper.normalizeAngle(this.arcCenter.directionTo(this.getStopPos()) + (Math.PI/2));
-        } else {
-            return mathHelper.normalizeAngle(this.arcCenter.directionTo(this.getStopPos()) - (Math.PI/2));
+        return getFacingDirectionFixedDistance(totalTravelDistance());
+    }
+
+    public double getFacingDirectionFixedDistance(double distance) {
+        if (distance < 0) {
+            throw new IllegalArgumentException("distance cannot be less than 0");
+        } else if (distance > arcDistance) {
+            throw new IllegalArgumentException("distance cannot be greater than the arcDistance");
         }
+        double radius = arcCenter.distanceTo(startPos);
+        double startingAngle = arcCenter.directionTo(startPos);
+        double diffAngle = distance / radius;
+        double finalAngle = startingAngle + diffAngle;
+
+        double addValue = this.circleDirection == CircleDirection.CLOCKWISE ? Math.PI/2 : -Math.PI/2;
+        return mathHelper.normalizeAngle(finalAngle + addValue);
     }
 
 }

@@ -104,13 +104,17 @@ public class Position implements Serializable {
                 '}';
     }
 
+    public boolean isCloseTo(Position pos) {
+        return Math.abs(this.x - pos.x) <= Math.ulp(this.x) && Math.abs(this.y - pos.y) <= Math.ulp(this.y);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position position = (Position) o;
 
-        return (position.x - this.x) <= Math.ulp(position.x) && (position.y - this.y) <= Math.ulp(position.x);
+        return Double.compare(this.x, position.x) == 0 && Double.compare(this.y, position.y) == 0;
     }
 
     @Override

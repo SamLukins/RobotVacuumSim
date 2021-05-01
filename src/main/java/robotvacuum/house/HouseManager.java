@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.awt.Rectangle;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -18,7 +19,7 @@ public class HouseManager {
     public static final double SCALE_FACTOR = 20;
     
     House h;
-    Serializer s;
+    final Serializer s;
     
     public HouseManager() {
         h = null;
@@ -80,7 +81,7 @@ public class HouseManager {
         Map<Position, Room> rooms = h.getRooms();
         double tempX, tempY, tempWidth, tempHeight;
         CollisionShape tempShape;
-        
+
         for (Room r : rooms.values()) {
             for (Furniture f : r.getAllFurniture()) {
                 if (f instanceof Chest) {

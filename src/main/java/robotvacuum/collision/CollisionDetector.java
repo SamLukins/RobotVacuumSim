@@ -2,6 +2,7 @@ package robotvacuum.collision;
 
 import robotvacuum.house.House;
 import robotvacuum.robot.ActualMovement;
+import robotvacuum.robot.Movement;
 import robotvacuum.robot.ProposedMovement;
 import robotvacuum.robot.RobotVacuum;
 import robotvacuum.robot.VacuumStrategy;
@@ -51,7 +52,7 @@ public class CollisionDetector implements Serializable {
     public Set<Collision> detectStaticCollision(RobotVacuum<? extends VacuumStrategy> rv, House house) {
         return detectStaticCollision(
                 new CollisionTestData<>(
-                        rv.getrSimState().getPosition(),
+                        rv.getrSimState().getPositionWithRotation().getPos(),
                         rv.getProperties().getcCircle()
                 ),
                 house.getRooms().entrySet().stream().flatMap(
@@ -187,8 +188,9 @@ public class CollisionDetector implements Serializable {
         //if continue colliding
         Set<Collision> startCollisions = detectStaticCollision(ctd1, ctds);
         if (!startCollisions.isEmpty()) {
-            Position collisionTestPosition = proposedMovement.getMov().fixedDistancePosition(Math.min(0.01, proposedMovement.getMov().totalTravelDistance()));
-            Set<Collision> movementCollisions = detectStaticCollision(new CollisionTestData<CollisionShape>(collisionTestPosition, ctd1.getcShape()), ctds);
+            double minDistance = Math.min(0.001, proposedMovement.getMov().totalTravelDistance());
+            Position collisionTestPosition = proposedMovement.getMov().fixedDistancePositionWithRotation(minDistance).getPos();
+            Set<Collision> movementCollisions = detectStaticCollision(new CollisionTestData<>(collisionTestPosition, ctd1.getcShape()), ctds);
 
 
             //if movement would continue collision
@@ -206,7 +208,7 @@ public class CollisionDetector implements Serializable {
              travelDistance <= proposedMovement.getMov().totalTravelDistance();
              travelDistance += initialCheckResolution) {
             Set<Collision> testCollisions = detectStaticCollision(
-                    new CollisionTestData<CollisionShape>(proposedMovement.getMov().fixedDistancePosition(travelDistance), ctd1.getcShape()),
+                    new CollisionTestData<>(proposedMovement.getMov().fixedDistancePositionWithRotation(travelDistance).getPos(), ctd1.getcShape()),
                     ctds);
 
             //if there is a collision
@@ -218,20 +220,26 @@ public class CollisionDetector implements Serializable {
                         testCollisions, finalCheckResolution);
 
                 //create and return the actual resulting movement to the collision
+                Optional<Movement> movement;
+                if (finalCollision.getNoCollisionDistance() > 0.0) {
+                    movement = Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getNoCollisionDistance()));
+                } else {
+                    movement = Optional.empty();
+                }
                 return new ActualMovement(
                         proposedMovement,
-                        Optional.of(proposedMovement.getMov().partialFixedDistanceMovement(finalCollision.getNoCollisionDistance())),
+                        movement,
                         finalCollision.getCollisions());
             }
         }
 
         Set<Collision> testCollisions = detectStaticCollision(
-                new CollisionTestData<CollisionShape>(proposedMovement.getMov().getStopPos(), ctd1.getcShape()),
+                new CollisionTestData<>(proposedMovement.getMov().getStopPosWithRotation().getPos(), ctd1.getcShape()),
                 ctds);
 
         //if there is a collision
-            final double fullDistance = proposedMovement.getMov().totalTravelDistance();
-            final double noCollisionDistance = fullDistance - (fullDistance % initialCheckResolution);
+        final double fullDistance = proposedMovement.getMov().totalTravelDistance();
+        final double noCollisionDistance = fullDistance - (fullDistance % initialCheckResolution);
         if (!testCollisions.isEmpty()) {
 
             //get a more accurate collision
@@ -251,13 +259,13 @@ public class CollisionDetector implements Serializable {
     }
 
     public ActualMovement detectDynamicCollision(RobotVacuum<? extends VacuumStrategy> rv, House house, ProposedMovement proposedMovement) {
-        Stream<CollisionTestData<CollisionShape>> wallCollisionTestDataStream = house.getRooms().entrySet().stream().flatMap(
+        Stream<CollisionTestData<? extends CollisionShape>> wallCollisionTestDataStream = house.getRooms().entrySet().stream().flatMap(
                 entry -> entry
                         .getValue()
                         .getWalls()
                         .entrySet()
                         .stream()
-                        .map(wallEntry -> new CollisionTestData<CollisionShape>(entry.getKey().offsetPositionCartesian(wallEntry.getKey()),
+                        .map(wallEntry -> new CollisionTestData<>(entry.getKey().offsetPositionCartesian(wallEntry.getKey()),
                                 wallEntry.getValue().getcRect())));
 
 
@@ -265,7 +273,7 @@ public class CollisionDetector implements Serializable {
                 .flatMap(room -> room.getAllFurniture().stream().flatMap(furniture -> furniture.getCollisionTestData().stream()));
 
         return detectDynamicCollision(
-                new CollisionTestData<>(rv.getrSimState().getPosition(), rv.getProperties().getcCircle()),
+                new CollisionTestData<>(rv.getrSimState().getPositionWithRotation().getPos(), rv.getProperties().getcCircle()),
                 Stream.concat(wallCollisionTestDataStream, furnitureCollisionTestDataStream)
                         .collect(Collectors.toSet()),
                 proposedMovement);
@@ -301,8 +309,9 @@ public class CollisionDetector implements Serializable {
                 return new MovementCollisions(collisions, distanceToCollision, distanceToNoCollision);
             }
 
+            Position halfwayPosition = proposedMovement.getMov().fixedDistancePositionWithRotation(halfway).getPos();
             Set<Collision> halfwayCollisions =
-                    detectStaticCollision(new CollisionTestData<CollisionShape>(proposedMovement.getMov().fixedDistancePosition(halfway), ctd1.getcShape()), ctds);
+                    detectStaticCollision(new CollisionTestData<>(halfwayPosition, ctd1.getcShape()), ctds);
             if (!halfwayCollisions.isEmpty()) {
                 return binarySearchDynamicCollision(ctd1, ctds, proposedMovement, distanceToNoCollision, halfway, halfwayCollisions, resolution);
             } else {

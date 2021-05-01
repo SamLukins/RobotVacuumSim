@@ -36,8 +36,9 @@ class CollisionDetectorDynamicTest {
 
         Movement movement = optMovement.orElseThrow();
         Collision collision = optCollision.orElseThrow();
-        assertEquals(2.0, movement.getStopPos().getX(), 0.01);
-        assertEquals(1.0, movement.getStopPos().getY(), 0.01);
+        Position stopPos = movement.getStopPosWithRotation().getPos();
+        assertEquals(2.0, stopPos.getX(), 0.01);
+        assertEquals(1.0, stopPos.getY(), 0.01);
         assertEquals(3.0, collision.getCollisionPosition().getX(), 0.01);
         assertEquals(1.0, collision.getCollisionPosition().getY(), 0.01);
     }

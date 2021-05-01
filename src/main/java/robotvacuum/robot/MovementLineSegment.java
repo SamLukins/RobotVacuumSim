@@ -1,6 +1,7 @@
 package robotvacuum.robot;
 
 import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 
 public class MovementLineSegment implements Movement {
 
@@ -13,11 +14,11 @@ public class MovementLineSegment implements Movement {
     }
 
     @Override
-    public Position linearInterpolatedPosition(double percent) {
+    public PositionWithRotation linearInterpolatedPositionWithRotation(double percent) {
         if (!(0 <= percent && percent <= 1)) {
             throw new IllegalArgumentException("Percent out of bounds. Value: " + percent);
         }
-        return startPos.linearInterpolateTo(stopPos, percent);
+        return new PositionWithRotation(startPos.linearInterpolateTo(stopPos, percent), startPos.directionTo(stopPos));
     }
 
     /**
@@ -26,8 +27,8 @@ public class MovementLineSegment implements Movement {
      * @throws RuntimeException if the distance is greater than the total movement distance
      */
     @Override
-    public Position fixedDistancePosition(double distance) {
-        return linearInterpolatedPosition(distance / totalTravelDistance());
+    public PositionWithRotation fixedDistancePositionWithRotation(double distance) {
+        return linearInterpolatedPositionWithRotation(distance / totalTravelDistance());
     }
 
     /**
@@ -37,12 +38,12 @@ public class MovementLineSegment implements Movement {
      */
     @Override
     public MovementLineSegment partialFixedDistanceMovement(double distance) {
-        return new MovementLineSegment(startPos, fixedDistancePosition(distance));
+        return new MovementLineSegment(startPos, fixedDistancePositionWithRotation(distance).getPos());
     }
 
     @Override
     public MovementLineSegment partialLinearInterpolatedMovement(double percent) {
-        return new MovementLineSegment(startPos, linearInterpolatedPosition(percent));
+        return new MovementLineSegment(startPos, linearInterpolatedPositionWithRotation(percent).getPos());
     }
 
     /**
@@ -69,8 +70,8 @@ public class MovementLineSegment implements Movement {
      * @return the stopPos
      */
     @Override
-    public Position getStopPos() {
-        return stopPos;
+    public PositionWithRotation getStopPosWithRotation() {
+        return new PositionWithRotation(stopPos, startPos.directionTo(stopPos));
     }
 
 }

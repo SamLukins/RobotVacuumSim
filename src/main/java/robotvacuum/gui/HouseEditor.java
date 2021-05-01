@@ -6,6 +6,7 @@ import robotvacuum.house.House;
 import robotvacuum.house.HouseManager;
 import robotvacuum.house.Room;
 import robotvacuum.house.Wall;
+import robotvacuum.robot.RobotSimulationState;
 import robotvacuum.simulation.Simulator;
 
 import javax.swing.*;
@@ -56,13 +57,14 @@ public class HouseEditor extends javax.swing.JFrame {
                         throw new RuntimeException(e);
                     }
                     accumulatedSleep = accumulatedSleep + sleepTime;
+                    RobotSimulationState rSimState = s.getVacuum().getrSimState();
                     if (accumulatedSleep >= 1000) {
                         gui.paintCleanSpots(s.getCleanSpots());
-                        s.getVacuum().getrSimState().setRemainingBattery(s.getVacuum().getrSimState().getRemainingBattery() - (1.0 / 60.0));
+                        rSimState.setRemainingBattery(rSimState.getRemainingBattery() - (1.0 / 60.0));
                         accumulatedSleep = accumulatedSleep - 1000;
                     }
-                    remainingBatteryText.setText("Remaining battery: " + (int) s.getVacuum().getrSimState().getRemainingBattery() + " min");
-                    if (s.getVacuum().getrSimState().getRemainingBattery() <= 0) {
+                    remainingBatteryText.setText("Remaining battery: " + (int) rSimState.getRemainingBattery() + " min");
+                    if (rSimState.getRemainingBattery() <= 0) {
                         stopVacuum();
                         outputText.setText("Vacuum battery has run out.");
                     }

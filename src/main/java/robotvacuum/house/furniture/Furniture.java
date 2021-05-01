@@ -12,5 +12,5 @@ import robotvacuum.collision.CollisionTestData;
 
 public interface Furniture {
 
-    public Collection<CollisionTestData<? extends CollisionShape>> getCollisionTestData();
+    Collection<CollisionTestData<? extends CollisionShape>> getCollisionTestData();
 }

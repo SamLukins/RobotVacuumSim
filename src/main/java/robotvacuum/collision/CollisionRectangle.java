@@ -60,4 +60,9 @@ public class CollisionRectangle extends CollisionShape {
     public double getHeight() {
         return height;
     }
+
+    @Override
+    public double getArea() {
+        return this.height * this.width;
+    }
 }

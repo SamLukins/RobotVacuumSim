@@ -6,12 +6,12 @@ import robotvacuum.collision.CollisionCircle;
 import robotvacuum.collision.CollisionDetector;
 import robotvacuum.collision.CollisionRectangle;
 import robotvacuum.collision.Position;
+import robotvacuum.collision.PositionWithRotation;
 import robotvacuum.house.FlooringType;
 import robotvacuum.house.House;
 import robotvacuum.house.Room;
 import robotvacuum.house.Wall;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,20 +47,19 @@ class RobotVacuumIntegrationTest {
 
     @Test
     void canCreateRobotVacuum() {
-
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(5.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(5.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0)
         );
 
-        assertEquals(5.0, rv.getrSimState().getPosition().getX(), Math.ulp(0.0));
-        assertEquals(5.0, rv.getrSimState().getPosition().getY(), Math.ulp(0.0));
-        assertEquals(0.0, rv.getrSimState().getFacingDirection(), Math.ulp(0.0));
+        PositionWithRotation positionWithRotation = rv.getrSimState().getPositionWithRotation();
+        assertEquals(5.0, positionWithRotation.getPos().getX(), Math.ulp(0.0));
+        assertEquals(5.0, positionWithRotation.getPos().getY(), Math.ulp(0.0));
+        assertEquals(0.0, positionWithRotation.getRot(), Math.ulp(0.0));
         assertEquals(100.0, rv.getrSimState().getRemainingBattery(), Math.ulp(0.0));
     }
 
@@ -69,8 +68,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(2.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(2.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0)
@@ -78,8 +76,10 @@ class RobotVacuumIntegrationTest {
 
         ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
-        assertEquals(0.0, proposedVacuumMovement.getMov().getStartPos().directionTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
-        assertEquals(3.0, proposedVacuumMovement.getMov().getStartPos().distanceTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
+        Position startPos = proposedVacuumMovement.getMov().getStartPos();
+        Position stopPos = proposedVacuumMovement.getMov().getStopPosWithRotation().getPos();
+        assertEquals(0.0, startPos.directionTo(stopPos), Math.ulp(0.0));
+        assertEquals(3.0, startPos.distanceTo(stopPos), Math.ulp(0.0));
     }
 
     @Test
@@ -87,8 +87,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(2.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(2.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0)
@@ -107,8 +106,10 @@ class RobotVacuumIntegrationTest {
 
         ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
-        assertEquals(0.0, proposedVacuumMovement.getMov().getStartPos().directionTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
-        assertEquals(3.0, proposedVacuumMovement.getMov().getStartPos().distanceTo(proposedVacuumMovement.getMov().getStopPos()), Math.ulp(0.0));
+        Position startPos = proposedVacuumMovement.getMov().getStartPos();
+        Position stopPos = proposedVacuumMovement.getMov().getStopPosWithRotation().getPos();
+        assertEquals(0.0, startPos.directionTo(stopPos), Math.ulp(0.0));
+        assertEquals(3.0, startPos.distanceTo(stopPos), Math.ulp(0.0));
 
 
         CollisionDetector cd = new CollisionDetector();
@@ -116,10 +117,10 @@ class RobotVacuumIntegrationTest {
 
         Set<Collision> collisions = actualMovement.getCollisions();
         assertTrue(collisions.isEmpty());
-        Position stopPos = actualMovement.getMovement().orElseThrow().getStopPos();
+        Position actualStopPos = actualMovement.getMovement().orElseThrow().getStopPosWithRotation().getPos();
 
-        assertEquals(5.0, stopPos.getX(), Math.ulp(0.0));
-        assertEquals(5.0, stopPos.getY(), Math.ulp(0.0));
+        assertEquals(5.0, actualStopPos.getX(), Math.ulp(0.0));
+        assertEquals(5.0, actualStopPos.getY(), Math.ulp(0.0));
     }
 
     @Test
@@ -127,8 +128,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(5.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(5.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0)
@@ -165,8 +165,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(5.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(5.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0)
@@ -204,8 +203,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(5.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(5.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0, Math.PI / 2)
@@ -243,8 +241,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(5.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(5.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 5.0, Math.PI / 4)
@@ -264,7 +261,7 @@ class RobotVacuumIntegrationTest {
         ProposedMovement proposedVacuumMovement = rv.getVacuumStrategy().vacuum(rv.getrSimState());
         assertNotNull(proposedVacuumMovement);
         Movement mov = proposedVacuumMovement.getMov();
-        assertEquals(Math.PI / 4, mov.getStartPos().directionTo(mov.getStopPos()));
+        assertEquals(Math.PI / 4, mov.getStartPos().directionTo(mov.getStopPosWithRotation().getPos()));
 
         CollisionDetector cd = new CollisionDetector();
         ActualMovement actualMovement = cd.detectDynamicCollision(rv, testHouse, proposedVacuumMovement);
@@ -273,7 +270,7 @@ class RobotVacuumIntegrationTest {
         assertFalse(collisions.isEmpty());
         assertEquals(2, collisions.size());
 
-        Position stopPos = actualMovement.getMovement().orElseThrow().getStopPos();
+        Position stopPos = actualMovement.getMovement().orElseThrow().getStopPosWithRotation().getPos();
 
         assertEquals(root2, actualMovement.getMovement().get().totalTravelDistance(), 0.01);
         assertEquals(6.0, stopPos.getX(), 0.01);
@@ -285,8 +282,7 @@ class RobotVacuumIntegrationTest {
         RobotVacuum<VacuumStrategy> rv = new RobotVacuum<>(
                 testRobotProperties,
                 new RobotSimulationState(
-                        new Position(5.0, 5.0),
-                        0,
+                        new PositionWithRotation(new Position(5.0, 5.0), 0),
                         100.0
                 ),
                 new RandomVacuumStrategy(defaultSeed, 3.0)

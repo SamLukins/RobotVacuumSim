@@ -6,7 +6,7 @@ import java.util.List;
 
 public class MovementHistory {
 
-    private List<Movement> movements = new ArrayList<>();
+    private final List<Movement> movements = new ArrayList<>();
 
     public void addMovement(Movement m) {
         movements.add(m);

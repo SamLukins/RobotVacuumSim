@@ -49,7 +49,7 @@ public class SpiralVacuumStrategy implements VacuumStrategy, Serializable {
                 .map(actualMovement -> actualMovement.getCollisions())
                 .orElse(Collections.emptySet());
 
-        Position robotPosition = rSimState.getPosition();
+        Position robotPosition = rSimState.getPositionWithRotation().getPos();
         if (!previousCollisions.isEmpty()) {
             this.spiralState = SpiralState.LINE_FOR_SPIRAL;
         }
@@ -81,8 +81,8 @@ public class SpiralVacuumStrategy implements VacuumStrategy, Serializable {
             }
         } else if (this.spiralState == SpiralState.START_SPIRAL) {
             final double distance = 0.1;
-            final Position spiralCenter = robotPosition.offsetPositionPolar(rSimState.getFacingDirection() + Math.PI / 2, distance);
-            final double referenceAngle = mathHelper.normalizeAngle(rSimState.getFacingDirection() - Math.PI / 2);
+            final Position spiralCenter = robotPosition.offsetPositionPolar(rSimState.getPositionWithRotation().getRot() + Math.PI / 2, distance);
+            final double referenceAngle = mathHelper.normalizeAngle(rSimState.getPositionWithRotation().getRot() - Math.PI / 2);
 
             MovementSpiral newSpiral = new MovementSpiral(referenceAngle, referenceAngle, distance, spiralCenter,
                     Math.PI * 2, 0.15, CircleDirection.CLOCKWISE);
